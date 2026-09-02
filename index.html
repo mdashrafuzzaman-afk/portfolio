@@ -1,0 +1,689 @@
+<title>Md. Ashrafuzzaman</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;600;700;800&family=Big+Shoulders+Stencil+Display:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  /* ============ TOKENS ============ */
+  :root{
+    --paper:#E7E5DD;
+    --paper-raised:#F2F0E8;
+    --paper-sunken:#DCDACF;
+    --ink:#1C1F1C;
+    --ink-soft:#52544C;
+    --ink-faint:#84826F;
+    --line:#B8B4A5;
+    --line-strong:#8D8974;
+    --steel:#3C4B54;
+    --soil:#8B6A3E;
+    --soil-fill:#CBA871;
+    --soil-fill-2:#9E9A7E;
+    --redline:#AF3B1E;
+    --redline-soft:rgba(175,59,30,.11);
+    --shadow:rgba(28,31,28,.10);
+    --focus:#2F6E5E;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --paper:#15181A;
+      --paper-raised:#1B1F20;
+      --paper-sunken:#101314;
+      --ink:#E9E6DB;
+      --ink-soft:#ADAA9C;
+      --ink-faint:#767468;
+      --line:#34372F;
+      --line-strong:#4B4E42;
+      --steel:#93A9B2;
+      --soil:#CDA05F;
+      --soil-fill:#5C3F22;
+      --soil-fill-2:#4A4A3C;
+      --redline:#E1602E;
+      --redline-soft:rgba(225,96,46,.18);
+      --shadow:rgba(0,0,0,.45);
+      --focus:#63B79E;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#15181A;
+    --paper-raised:#1B1F20;
+    --paper-sunken:#101314;
+    --ink:#E9E6DB;
+    --ink-soft:#ADAA9C;
+    --ink-faint:#767468;
+    --line:#34372F;
+    --line-strong:#4B4E42;
+    --steel:#93A9B2;
+    --soil:#CDA05F;
+    --soil-fill:#5C3F22;
+    --soil-fill-2:#4A4A3C;
+    --redline:#E1602E;
+    --redline-soft:rgba(225,96,46,.18);
+    --shadow:rgba(0,0,0,.45);
+    --focus:#63B79E;
+  }
+
+  /* ============ BASE ============ */
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--redline-soft); color:var(--ink); }
+  a{ color:inherit; }
+  a:focus-visible, button:focus-visible, .navlink:focus-visible{
+    outline:2px solid var(--focus);
+    outline-offset:3px;
+    border-radius:2px;
+  }
+  h1,h2,h3{
+    font-family:'Big Shoulders Display',system-ui,sans-serif;
+    font-weight:700;
+    text-transform:uppercase;
+    text-wrap:balance;
+    margin:0;
+    letter-spacing:.01em;
+  }
+  .mono{ font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace; }
+  .num{ font-variant-numeric:tabular-nums; }
+  @media (prefers-reduced-motion:reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
+  }
+
+  .wrap{ max-width:1080px; margin:0 auto; padding-inline:clamp(20px,4vw,48px); }
+
+  /* ============ TOPBAR ============ */
+  .topbar{
+    position:sticky; top:0; z-index:40;
+    background:var(--paper);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar-inner{
+    max-width:1080px; margin:0 auto; padding:clamp(20px,4vw,48px);
+    padding-top:14px; padding-bottom:14px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px; flex-wrap:wrap;
+  }
+  .brand{
+    font-family:'Big Shoulders Display',sans-serif;
+    font-weight:700; font-size:1.05rem; text-transform:uppercase;
+    letter-spacing:.04em;
+    display:flex; align-items:baseline; gap:.5em;
+  }
+  .brand .b-sub{ font-family:'IBM Plex Mono',monospace; font-size:.6rem; color:var(--ink-faint); text-transform:none; letter-spacing:.02em; }
+  .sheetnav{ display:flex; gap:2px; flex-wrap:wrap; }
+  .navlink{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.68rem; letter-spacing:.03em;
+    text-decoration:none; color:var(--ink-soft);
+    padding:6px 10px; border:1px solid transparent; border-radius:2px;
+    white-space:nowrap;
+  }
+  .navlink:hover{ color:var(--ink); border-color:var(--line); background:var(--paper-raised); }
+
+  /* ============ SHEET SCAFFOLDING ============ */
+  .sheet{ padding-block:clamp(48px,8vw,88px); border-bottom:1px solid var(--line); position:relative; }
+  .sheet:last-of-type{ border-bottom:none; }
+  .sheet-tag{
+    display:flex; align-items:center; gap:10px;
+    font-family:'IBM Plex Mono',monospace; font-size:.72rem;
+    letter-spacing:.06em; color:var(--steel); text-transform:uppercase;
+    margin-bottom:20px;
+  }
+  .sheet-tag::before{
+    content:""; display:inline-block; width:9px; height:9px;
+    border:1.5px solid var(--steel); transform:rotate(45deg); flex:none;
+  }
+  .sheet-title{ font-size:clamp(1.7rem,4vw,2.5rem); margin-bottom:8px; }
+  .sheet-kicker{ color:var(--ink-soft); max-width:60ch; font-size:1rem; margin-bottom:0;}
+
+  /* dimension-line divider */
+  .dim{ display:flex; align-items:center; gap:14px; margin:2.6rem 0; }
+  .dim-seg{ flex:1; height:1px; background:var(--line-strong); position:relative; }
+  .dim-seg:first-child::before{
+    content:""; position:absolute; left:0; top:-3px; width:1px; height:7px; background:var(--line-strong);
+  }
+  .dim-seg:last-child::after{
+    content:""; position:absolute; right:0; top:-3px; width:1px; height:7px; background:var(--line-strong);
+  }
+  .dim-label{
+    font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.05em;
+    color:var(--redline); white-space:nowrap; padding:0 2px;
+  }
+
+  /* ============ HERO (S-00) ============ */
+  .hero{ padding-top:clamp(40px,7vw,72px); border-bottom:1px solid var(--line); }
+  .hero-grid{ display:grid; grid-template-columns:1.25fr .85fr; gap:clamp(28px,5vw,56px); align-items:center; }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace; font-size:.78rem; letter-spacing:.08em;
+    color:var(--redline); text-transform:uppercase; margin-bottom:14px;
+  }
+  .hero h1{
+    font-size:clamp(2.6rem,7.2vw,5.1rem);
+    line-height:.94; margin-bottom:18px;
+  }
+  .hero-sub{
+    font-family:'IBM Plex Mono',monospace; font-size:.95rem; color:var(--steel);
+    margin-bottom:20px; max-width:52ch;
+  }
+  .hero-lede{ color:var(--ink-soft); max-width:56ch; font-size:1.02rem; margin-bottom:26px; }
+  .stamp{
+    display:inline-flex; flex-direction:column; gap:2px;
+    border:2px solid var(--redline); color:var(--redline);
+    padding:10px 16px; transform:rotate(-2deg);
+    margin-bottom:30px;
+  }
+  .stamp b{ font-family:'Big Shoulders Stencil Display',sans-serif; font-size:1.5rem; letter-spacing:.02em; line-height:1; }
+  .stamp span{ font-family:'IBM Plex Mono',monospace; font-size:.62rem; letter-spacing:.06em; text-transform:uppercase; }
+  .cta-row{ display:flex; gap:12px; flex-wrap:wrap; }
+  .btn{
+    font-family:'IBM Plex Mono',monospace; font-size:.78rem; letter-spacing:.03em;
+    text-decoration:none; padding:12px 18px; border:1.5px solid var(--ink);
+    color:var(--ink); text-transform:uppercase; transition:transform .12s ease;
+  }
+  .btn:hover{ transform:translateY(-2px); }
+  .btn.primary{ background:var(--redline); border-color:var(--redline); color:#F4EFE6; }
+  .btn.primary:hover{ background:var(--ink); border-color:var(--ink); }
+
+  .hero-fig{ }
+  .hero-fig svg{ width:100%; height:auto; display:block; }
+  .fig-cap{
+    font-family:'IBM Plex Mono',monospace; font-size:.66rem; color:var(--ink-faint);
+    text-align:center; margin-top:8px; letter-spacing:.03em;
+  }
+
+  /* ============ ABOUT (S-01) ============ */
+  .about-grid{ display:grid; grid-template-columns:1.5fr 1fr; gap:clamp(28px,5vw,56px); align-items:start; }
+  .about-grid p{ color:var(--ink-soft); margin:0 0 1.1em; max-width:62ch; }
+  .about-grid p:last-child{ margin-bottom:0; }
+  .about-grid strong{ color:var(--ink); font-weight:600; }
+
+  .credentials{ background:var(--paper-raised); border:1px solid var(--line); padding:22px 22px 6px; }
+  .cred-h{
+    font-family:'IBM Plex Mono',monospace; font-size:.7rem; letter-spacing:.08em;
+    color:var(--ink-faint); text-transform:uppercase; margin-bottom:14px;
+    border-bottom:1px solid var(--line); padding-bottom:10px;
+  }
+  .cred-row{ display:flex; justify-content:space-between; gap:14px; padding:11px 0; border-bottom:1px solid var(--line); }
+  .cred-row:last-of-type{ border-bottom:none; }
+  .cred-row .l{ font-weight:600; font-size:.92rem; }
+  .cred-row .l small{ display:block; font-weight:400; color:var(--ink-soft); font-size:.82rem; margin-top:2px; }
+  .cred-row .r{ font-family:'IBM Plex Mono',monospace; font-size:.74rem; color:var(--steel); white-space:nowrap; text-align:right; }
+  .cred-sub{ padding:14px 0 16px; }
+  .cred-sub-h{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; letter-spacing:.06em; color:var(--ink-faint); text-transform:uppercase; margin-bottom:8px;}
+  .cred-sub li{ font-size:.85rem; color:var(--ink-soft); margin-bottom:6px; }
+  .cred-sub li b{ color:var(--ink); font-weight:600; }
+
+  /* ============ EXPERIENCE / BOREHOLE LOG (S-02) ============ */
+  .log{ position:relative; }
+  .log-head{
+    display:grid; grid-template-columns:64px 1fr; gap:20px;
+    font-family:'IBM Plex Mono',monospace; font-size:.66rem; color:var(--ink-faint);
+    text-transform:uppercase; letter-spacing:.05em; padding-bottom:10px;
+    border-bottom:1px solid var(--line); margin-bottom:4px;
+  }
+  .entry{ display:grid; grid-template-columns:64px 1fr; gap:20px; padding:26px 0; border-bottom:1px solid var(--line); }
+  .entry:last-child{ border-bottom:none; }
+  .strat{ position:relative; display:flex; justify-content:center; }
+  .strat svg{ width:34px; height:100%; min-height:96px; }
+  .role-head{ display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:6px; }
+  .role-title{ font-family:'Big Shoulders Display',sans-serif; font-weight:700; font-size:1.28rem; text-transform:uppercase; }
+  .role-org{ font-size:.86rem; color:var(--steel); margin-bottom:10px; }
+  .role-dates{ font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--redline); white-space:nowrap; padding-top:4px; }
+  .role-list{ margin:0; padding-left:1.1em; color:var(--ink-soft); font-size:.92rem; }
+  .role-list li{ margin-bottom:5px; }
+  .role-list li::marker{ color:var(--line-strong); }
+  .legend-key{ display:flex; gap:16px; flex-wrap:wrap; margin-top:22px; }
+  .legend-key .lk{ display:flex; align-items:center; gap:7px; font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--ink-faint); }
+  .legend-key svg{ width:16px; height:16px; flex:none; }
+
+  /* ============ PROJECTS (S-03) ============ */
+  .proj-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--line); border:1px solid var(--line); }
+  .proj-card{ background:var(--paper); padding:24px; display:flex; flex-direction:column; gap:10px; }
+  .proj-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+  .proj-num{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--ink-faint); letter-spacing:.04em; }
+  .proj-icon{ width:34px; height:34px; color:var(--steel); flex:none; }
+  .proj-title{ font-family:'Big Shoulders Display',sans-serif; font-weight:700; font-size:1.18rem; text-transform:uppercase; line-height:1.08; }
+  .proj-meta{ font-family:'IBM Plex Mono',monospace; font-size:.7rem; color:var(--steel); }
+  .proj-list{ margin:2px 0 0; padding-left:1.05em; color:var(--ink-soft); font-size:.88rem; flex:1; }
+  .proj-list li{ margin-bottom:5px; }
+  .proj-list li::marker{ color:var(--line-strong); }
+  .proj-metric{ margin-top:auto; padding-top:10px; border-top:1px dashed var(--line); font-family:'IBM Plex Mono',monospace; font-size:.74rem; color:var(--redline); }
+
+  .notes{ margin-top:38px; background:var(--paper-raised); border:1px solid var(--line); padding:20px 22px; }
+  .notes-h{ font-family:'IBM Plex Mono',monospace; font-size:.7rem; letter-spacing:.07em; color:var(--ink-faint); text-transform:uppercase; margin-bottom:10px; }
+  .notes ol{ margin:0; padding-left:1.3em; color:var(--ink-soft); font-size:.88rem; }
+  .notes li{ margin-bottom:7px; }
+  .notes li:last-child{ margin-bottom:0; }
+  .notes b{ color:var(--ink); font-weight:600; }
+
+  /* ============ SKILLS / LEGEND (S-04) ============ */
+  .legend-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:28px 32px; }
+  .legend-group h3{
+    font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.06em;
+    color:var(--steel); text-transform:uppercase; font-weight:600;
+    margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--line);
+  }
+  .legend-group ul{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
+  .legend-group li{
+    display:flex; align-items:center; gap:9px; font-size:.86rem; color:var(--ink-soft);
+  }
+  .swatch{ width:11px; height:11px; flex:none; border:1px solid var(--line-strong); }
+
+  /* ============ CONTACT / TITLE BLOCK (S-05) ============ */
+  .titleblock{ border:1.5px solid var(--ink); }
+  .tb-top{ display:grid; grid-template-columns:1.4fr 1fr; }
+  .tb-name{ padding:26px; border-right:1.5px solid var(--ink); }
+  .tb-name .who{ font-family:'Big Shoulders Display',sans-serif; font-weight:800; font-size:1.7rem; text-transform:uppercase; margin-bottom:6px; }
+  .tb-name .role{ font-family:'IBM Plex Mono',monospace; font-size:.78rem; color:var(--steel); }
+  .tb-name p{ margin:14px 0 0; color:var(--ink-soft); font-size:.92rem; max-width:44ch; }
+  .tb-fields{ display:grid; grid-template-columns:1fr 1fr; }
+  .tb-field{ padding:16px 18px; border-left:1.5px solid var(--ink); border-bottom:1.5px solid var(--ink); }
+  .tb-field:nth-child(2){ border-left:none; }
+  .tb-field:nth-child(-n+2){ border-top:none; }
+  .tb-field .fl{ font-family:'IBM Plex Mono',monospace; font-size:.62rem; letter-spacing:.06em; color:var(--ink-faint); text-transform:uppercase; margin-bottom:5px; }
+  .tb-field .fv{ font-size:.9rem; word-break:break-word; }
+  .tb-field .fv a{ text-decoration:none; border-bottom:1px solid var(--line-strong); }
+  .tb-field .fv a:hover{ border-color:var(--redline); color:var(--redline); }
+  .tb-bottom{ display:flex; justify-content:space-between; align-items:center; padding:12px 22px; border-top:1.5px solid var(--ink); flex-wrap:wrap; gap:10px; }
+  .scale{ display:flex; align-items:center; gap:8px; }
+  .scale svg{ width:90px; height:14px; color:var(--ink-faint); }
+  .scale span{ font-family:'IBM Plex Mono',monospace; font-size:.64rem; color:var(--ink-faint); letter-spacing:.03em; }
+  .sheetno{ font-family:'IBM Plex Mono',monospace; font-size:.66rem; color:var(--ink-faint); }
+
+  footer{ padding:26px 0 48px; text-align:center; }
+  footer p{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--ink-faint); margin:0; }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width:760px){
+    .hero-grid{ grid-template-columns:1fr; }
+    .hero-fig{ order:-1; max-width:280px; margin:0 auto 8px; }
+    .about-grid{ grid-template-columns:1fr; }
+    .proj-grid{ grid-template-columns:1fr; }
+    .legend-grid{ grid-template-columns:1fr 1fr; }
+    .tb-top{ grid-template-columns:1fr; }
+    .tb-name{ border-right:none; border-bottom:1.5px solid var(--ink); }
+    .tb-fields{ grid-template-columns:1fr; }
+    .tb-field:nth-child(2){ border-left:1.5px solid var(--ink); border-top:none; }
+    .tb-field:nth-child(-n+2){ border-top:1.5px solid var(--ink); }
+    .tb-field:first-child{ border-top:none; }
+    .sheetnav{ overflow-x:auto; max-width:100%; }
+  }
+  @media (max-width:520px){
+    .legend-grid{ grid-template-columns:1fr; }
+    .entry{ grid-template-columns:40px 1fr; gap:12px; }
+    .log-head{ grid-template-columns:40px 1fr; gap:12px; }
+    .strat svg{ width:22px; }
+  }
+</style>
+
+<!-- shared SVG defs: soil hatch patterns, reused across the page -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <pattern id="hatchSand" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <rect width="8" height="8" fill="var(--soil-fill)"></rect>
+      <line x1="0" y1="0" x2="0" y2="8" stroke="var(--soil)" stroke-width="1.4"></line>
+    </pattern>
+    <pattern id="hatchClay" width="7" height="7" patternUnits="userSpaceOnUse">
+      <rect width="7" height="7" fill="var(--soil-fill-2)"></rect>
+      <line x1="0" y1="0" x2="7" y2="7" stroke="var(--ink-soft)" stroke-width="1"></line>
+      <line x1="7" y1="0" x2="0" y2="7" stroke="var(--ink-soft)" stroke-width="1"></line>
+    </pattern>
+    <pattern id="hatchGravel" width="9" height="9" patternUnits="userSpaceOnUse">
+      <rect width="9" height="9" fill="var(--soil-fill)"></rect>
+      <circle cx="2" cy="2" r="1.1" fill="var(--soil)"></circle>
+      <circle cx="6.5" cy="6" r="1.1" fill="var(--soil)"></circle>
+    </pattern>
+  </defs>
+</svg>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">MD. ASHRAFUZZAMAN <span class="b-sub">// CIVIL</span></div>
+    <nav class="sheetnav" aria-label="Sheet index">
+      <a class="navlink" href="#s00">S-00 COVER</a>
+      <a class="navlink" href="#s01">S-01 ABOUT</a>
+      <a class="navlink" href="#s02">S-02 EXPERIENCE</a>
+      <a class="navlink" href="#s03">S-03 PROJECTS</a>
+      <a class="navlink" href="#s04">S-04 SKILLS</a>
+      <a class="navlink" href="#s05">S-05 CONTACT</a>
+    </nav>
+  </div>
+</div>
+
+<main class="wrap">
+
+  <!-- ===================== S-00 COVER / HERO ===================== -->
+  <section class="sheet hero" id="s00">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow">Structural &amp; Geotechnical Engineering — Sheet S-00 of 05</div>
+        <h1>Md.<br>Ashrafuzzaman</h1>
+        <p class="hero-sub">M.S. Civil Engineering, Idaho State University — EIT Candidate, sitting the FE Civil exam September 21, 2026.</p>
+        <p class="hero-lede">I design and analyze structures in SAP2000, ETABS, VecTor2, and ANSYS Mechanical, and model soil, foundations, and soil&#8211;structure interaction in PLAXIS&nbsp;3D. Current research: a nonlinear FE model of a concrete arch culvert for Washington State fish&#8209;passage compliance, and a thesis pile model that matched a full&#8209;scale field test within 1.6%.</p>
+        <div class="stamp">
+          <b>183t / 186t</b>
+          <span>Predicted vs. field &mdash; 1.6% deviation</span>
+        </div>
+        <div class="cta-row">
+          <a class="btn primary" href="https://sites.google.com/isu.edu/md-ashrafuzzaman/resume" target="_blank" rel="noopener">View R&eacute;sum&eacute;</a>
+          <a class="btn" href="mailto:mdashrafuzzamanfahim@gmail.com">Email</a>
+          <a class="btn" href="https://linkedin.com/in/md-ash" target="_blank" rel="noopener">LinkedIn</a>
+        </div>
+      </div>
+      <div class="hero-fig">
+        <svg viewBox="0 0 260 300" fill="none" aria-hidden="true">
+          <!-- ground -->
+          <rect x="10" y="230" width="240" height="46" fill="url(#hatchSand)"></rect>
+          <line x1="10" y1="230" x2="250" y2="230" stroke="var(--ink)" stroke-width="1.6"></line>
+          <!-- pile -->
+          <rect x="118" y="70" width="24" height="190" fill="var(--paper-raised)" stroke="var(--ink)" stroke-width="1.6"></rect>
+          <!-- load arrow -->
+          <line x1="130" y1="16" x2="130" y2="62" stroke="var(--redline)" stroke-width="2"></line>
+          <path d="M130 70 L122 54 L138 54 Z" fill="var(--redline)"></path>
+          <text x="140" y="34" class="mono" font-size="12" fill="var(--redline)">P</text>
+          <!-- settlement curve -->
+          <path d="M158 78 C 190 96, 196 150, 176 220" stroke="var(--steel)" stroke-width="1.6" fill="none" stroke-dasharray="3 4"></path>
+          <circle cx="176" cy="220" r="2.6" fill="var(--steel)"></circle>
+          <text x="182" y="150" class="mono" font-size="10" fill="var(--steel)">Q&#8211;z</text>
+          <!-- dimension line depth -->
+          <line x1="60" y1="70" x2="60" y2="260" stroke="var(--line-strong)" stroke-width="1"></line>
+          <line x1="55" y1="70" x2="65" y2="70" stroke="var(--line-strong)" stroke-width="1"></line>
+          <line x1="55" y1="260" x2="65" y2="260" stroke="var(--line-strong)" stroke-width="1"></line>
+          <text x="40" y="168" class="mono" font-size="9" fill="var(--ink-faint)" transform="rotate(-90 40 168)">EMBED. DEPTH</text>
+        </svg>
+        <p class="fig-cap">FIG. 1 &mdash; AXIAL PILE LOAD TEST, SCHEMATIC</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== S-01 ABOUT ===================== -->
+  <section class="sheet" id="s01">
+    <div class="sheet-tag">Sheet S-01 &mdash; About</div>
+    <h2 class="sheet-title">Background</h2>
+    <div class="dim"><span class="dim-seg"></span><span class="dim-label">EST. POCATELLO, ID</span><span class="dim-seg"></span></div>
+
+    <div class="about-grid">
+      <div>
+        <p>I'm a structural and geotechnical engineer finishing my M.S. in Civil Engineering at Idaho State University on a Graduate Teaching Assistantship, and an <strong>EIT candidate</strong> sitting the FE Civil exam on September 21, 2026.</p>
+        <p>My work sits at the boundary of the two disciplines: I design and check structural members to <strong>AASHTO LRFD, ACI 318, AISC&nbsp;360, and NDS</strong>, and I model the ground underneath them &mdash; foundations, settlement, and soil&#8211;structure interaction &mdash; in <strong>PLAXIS&nbsp;3D</strong>. Current research applies a nonlinear finite element model (VecTor2) to a cast&#8209;in&#8209;place concrete arch culvert, calibrated against half&#8209;scale destructive test data, to support Washington State's updated fish&#8209;passage requirements.</p>
+        <p>My undergraduate thesis at BUET built and validated PLAXIS 3D models of full&#8209;scale pile static load tests, predicting ultimate bearing capacity within <strong>1.6%</strong> of the measured field result &mdash; outperforming the O'Neill&#8211;Reese analytical method and Meyerhof's empirical correlation it was checked against.</p>
+        <p>I'm looking for an entry&#8209;level structural or geotechnical engineering role where I can join a team and help design infrastructure that performs the way the model says it will.</p>
+      </div>
+
+      <div class="credentials">
+        <div class="cred-h">Credentials</div>
+        <div class="cred-row">
+          <div class="l">M.S. Civil Engineering<small>Idaho State University, Pocatello, ID &middot; GTA, GPA 3.67/4.00</small></div>
+          <div class="r num">EXP. DEC 2026</div>
+        </div>
+        <div class="cred-row">
+          <div class="l">B.S. Civil Engineering<small>Bangladesh Univ. of Eng. &amp; Technology (BUET), Dhaka</small></div>
+          <div class="r num">JUL 2024</div>
+        </div>
+        <div class="cred-sub">
+          <div class="cred-sub-h">Certifications</div>
+          <ul style="list-style:none;margin:0;padding:0;">
+            <li><b>EIT Candidate</b> &mdash; NCEES, sitting FE Civil Sep 21 2026</li>
+            <li><b>FLOW&#8209;3D HYDRO</b> Academic Training Certificate, 2026</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== S-02 EXPERIENCE / BOREHOLE LOG ===================== -->
+  <section class="sheet" id="s02">
+    <div class="sheet-tag">Sheet S-02 &mdash; Experience</div>
+    <h2 class="sheet-title">Field &amp; Research Log</h2>
+    <p class="sheet-kicker">Read like a boring log: surface (present) at top, roles logged by interval rather than strict depth &mdash; two ran concurrently at Idaho State.</p>
+
+    <div class="log">
+      <div class="log-head"><span>Strat.</span><span>Role</span></div>
+
+      <div class="entry">
+        <div class="strat"><svg viewBox="0 0 34 100" preserveAspectRatio="none"><rect x="9" y="0" width="16" height="100" fill="url(#hatchGravel)" stroke="var(--line-strong)" stroke-width="1"></rect></svg></div>
+        <div>
+          <div class="role-head">
+            <div><div class="role-title">Graduate Researcher</div><div class="role-org">Idaho State University, Dept. of Civil &amp; Environmental Engineering</div></div>
+            <div class="role-dates num">AUG 2025 &#8212; PRESENT</div>
+          </div>
+          <ul class="role-list">
+            <li>Engineer and validate a nonlinear FE model (VecTor2) of a cast&#8209;in&#8209;place concrete arch culvert against half&#8209;scale destructive test data, supporting Washington State's updated fish&#8209;passage requirements.</li>
+            <li>Reproduce the observed flexural failure mechanism and match experimental ultimate capacity through calibration of boundary conditions and model parameters.</li>
+            <li>Evaluate reinforced&#8209;concrete&#8209;calibrated constitutive models against plain concrete across multiple FE platforms.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="entry">
+        <div class="strat"><svg viewBox="0 0 34 100" preserveAspectRatio="none"><rect x="9" y="0" width="16" height="100" fill="url(#hatchSand)" stroke="var(--line-strong)" stroke-width="1"></rect></svg></div>
+        <div>
+          <div class="role-head">
+            <div><div class="role-title">Special Project Researcher</div><div class="role-org">Idaho State University, Dept. of Civil &amp; Environmental Engineering</div></div>
+            <div class="role-dates num">2026</div>
+          </div>
+          <ul class="role-list">
+            <li>Tested Portland cement&#8209;stabilized loess subgrade soil via unconfined compressive strength (UCS) testing across 24&#8209;hour to 28&#8209;day curing periods, addressing collapsible soil issues common to Idaho roadways.</li>
+            <li>Documented that 5% cement stabilization raised average strength from 152&nbsp;psi at 24 hours to 489&nbsp;psi at 28 days.</li>
+            <li>Contributed to a technical report for ISU's Idaho Transportation Department&#8209;sponsored subgrade stabilization study.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="entry">
+        <div class="strat"><svg viewBox="0 0 34 100" preserveAspectRatio="none"><rect x="9" y="0" width="16" height="100" fill="url(#hatchClay)" stroke="var(--line-strong)" stroke-width="1"></rect></svg></div>
+        <div>
+          <div class="role-head">
+            <div><div class="role-title">Teaching Assistant</div><div class="role-org">Idaho State University, Dept. of Civil &amp; Environmental Engineering</div></div>
+            <div class="role-dates num">AUG 2025 &#8212; PRESENT</div>
+          </div>
+          <ul class="role-list">
+            <li>Facilitate lab sessions for Basic Geotechnical Engineering &amp; Lab (CE 3332/3337), guiding hands&#8209;on soil testing.</li>
+            <li>Grade coursework and proctor exams for Engineering Statics (CE 2210) and Intro. to Environmental Engineering (ENVE 4410).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend-key">
+      <div class="lk"><svg viewBox="0 0 16 16"><rect width="16" height="16" fill="url(#hatchGravel)" stroke="var(--line-strong)"></rect></svg> Structural / FE research</div>
+      <div class="lk"><svg viewBox="0 0 16 16"><rect width="16" height="16" fill="url(#hatchSand)" stroke="var(--line-strong)"></rect></svg> Geotechnical testing</div>
+      <div class="lk"><svg viewBox="0 0 16 16"><rect width="16" height="16" fill="url(#hatchClay)" stroke="var(--line-strong)"></rect></svg> Instruction</div>
+    </div>
+  </section>
+
+  <!-- ===================== S-03 PROJECTS ===================== -->
+  <section class="sheet" id="s03">
+    <div class="sheet-tag">Sheet S-03 &mdash; Projects</div>
+    <h2 class="sheet-title">Drawing Set</h2>
+    <div class="dim"><span class="dim-seg"></span><span class="dim-label">5 SHEETS</span><span class="dim-seg"></span></div>
+
+    <div class="proj-grid">
+
+      <div class="proj-card">
+        <div class="proj-top">
+          <span class="proj-num mono">S&#8209;03.1</span>
+          <svg class="proj-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="15" y="6" width="10" height="22"></rect><line x1="4" y1="28" x2="36" y2="28"></line><path d="M20 34 C26 30 28 22 24 16" stroke-dasharray="2 3"></path></svg>
+        </div>
+        <div class="proj-title">B.Sc. Thesis: Pile Static Load Tests in PLAXIS&nbsp;3D</div>
+        <div class="proj-meta">BUET, Dept. of Civil Eng. &middot; 2023&#8211;2024</div>
+        <ul class="proj-list">
+          <li>Built &amp; validated full&#8209;scale pile FE models in stratified soil, using real load&#8209;test data from a Dhaka building project.</li>
+          <li>Benchmarked mesh sensitivity across five densities; outperformed O'Neill&#8211;Reese and Meyerhof methods.</li>
+          <li>Presented as oral &amp; poster session, ISU Research &amp; Creative Works Symposium 2026.</li>
+        </ul>
+        <div class="proj-metric num">183t predicted &middot; 186t field &middot; 1.6% off</div>
+      </div>
+
+      <div class="proj-card">
+        <div class="proj-top">
+          <span class="proj-num mono">S&#8209;03.2</span>
+          <svg class="proj-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="17" y="10" width="6" height="24"></rect><path d="M4 16 C10 14 14 20 20 18 S30 14 36 16"></path><path d="M4 22 C10 20 14 26 20 24 S30 20 36 22"></path></svg>
+        </div>
+        <div class="proj-title">CFD Scour Simulation of a Bridge Pier</div>
+        <div class="proj-meta">FLOW&#8209;3D HYDRO &middot; Computational Fluid Dynamics, ISU &middot; Spring 2026</div>
+        <ul class="proj-list">
+          <li>Modeled turbulent flow around a circular pier (TruVOF, RNG k&#8209;&epsilon;), with a three&#8209;level grid convergence study.</li>
+          <li>Validated against Roulund et al. (2005): 1.52&times; velocity amplification, within published range.</li>
+          <li>Cross&#8209;checked against the FHWA HEC&#8209;18 CSU empirical scour equation.</li>
+        </ul>
+        <div class="proj-metric num">Scour depth 0.191&nbsp;m &middot; matched mechanism</div>
+      </div>
+
+      <div class="proj-card">
+        <div class="proj-top">
+          <span class="proj-num mono">S&#8209;03.3</span>
+          <svg class="proj-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="6" y="6" width="28" height="28"></rect><line x1="6" y1="15" x2="34" y2="15"></line><line x1="6" y1="24" x2="34" y2="24"></line><line x1="15" y1="6" x2="15" y2="34"></line><line x1="24" y1="6" x2="24" y2="34"></line></svg>
+        </div>
+        <div class="proj-title">Axial Pile Load&#8211;Settlement FE in ANSYS</div>
+        <div class="proj-meta">Finite Element Methods in Civil Eng., ISU &middot; Spring 2026</div>
+        <ul class="proj-list">
+          <li>Modeled full&#8209;scale pile load&#8211;settlement behavior in ANSYS Mechanical under incremental static loading.</li>
+          <li>Validated simulated Q&#8211;z response against field static load test data.</li>
+        </ul>
+        <div class="proj-metric num">&lt;1% deviation from field data</div>
+      </div>
+
+      <div class="proj-card">
+        <div class="proj-top">
+          <span class="proj-num mono">S&#8209;03.4</span>
+          <svg class="proj-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 5 C28 5 33 12 33 19 C33 27 20 36 20 36 C20 36 7 27 7 19 C7 12 12 5 20 5 Z"></path><circle cx="20" cy="18" r="4"></circle></svg>
+        </div>
+        <div class="proj-title">GIS Shoreline Change, Dead Sea 1984&#8211;2021</div>
+        <div class="proj-meta">Advanced GIS &amp; Spatial Analysis, ISU &middot; Spring 2026</div>
+        <ul class="proj-list">
+          <li>Classified monthly water rasters (JRC Global Surface Water) in Google Earth Engine across six periods.</li>
+          <li>Converted &amp; analyzed in ArcGIS Pro via raster&#8209;to&#8209;polygon conversion and geodesic area calculation.</li>
+        </ul>
+        <div class="proj-metric num">&minus;20.1 km&sup2; since 1984 &middot; &minus;59.9 km&sup2; from 1998 peak</div>
+      </div>
+
+      <div class="proj-card" style="grid-column:1 / -1;">
+        <div class="proj-top">
+          <span class="proj-num mono">S&#8209;03.5</span>
+          <svg class="proj-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="6" y1="34" x2="34" y2="34"></line><line x1="10" y1="34" x2="10" y2="14"></line><line x1="20" y1="34" x2="20" y2="10"></line><line x1="30" y1="34" x2="30" y2="14"></line><line x1="6" y1="14" x2="34" y2="14"></line></svg>
+        </div>
+        <div class="proj-title">Capstone: MRT&#8209;6 Resettlement Housing Complex</div>
+        <div class="proj-meta">BUET, Senior Capstone Design &middot; 2023&#8211;2024</div>
+        <ul class="proj-list">
+          <li>Six&#8209;person team, full academic year: residential complex for persons displaced by the Dhaka MRT Line&#8209;6 extension &mdash; surveying, architectural design, environmental impact, feasibility.</li>
+          <li>Led proposal, preliminary reporting, and bill&#8209;of&#8209;quantities / cost estimation across the design lifecycle.</li>
+          <li>Designed raft foundations to BNBC 2020 (ACI 318&#8209;equivalent); ran settlement analysis in PLAXIS 3D alongside structural analysis in ETABS.</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="notes">
+      <div class="notes-h">Notes</div>
+      <ol>
+        <li><b>Publication.</b> &ldquo;Numerical Simulation of Full&#8209;Scale Static Load Tests Using PLAXIS 3D: Insights &amp; Applications.&rdquo; Oral &amp; poster presentation, ISU Research and Creative Works Symposium, Pocatello, ID, 2026.</li>
+        <li><b>Service.</b> STEM Night Volunteer, ISU College of Education / Boys &amp; Girls Club of Southeast Idaho, Syringa Elementary (2025) &mdash; guided students building traffic&#8209;light models.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===================== S-04 SKILLS / LEGEND ===================== -->
+  <section class="sheet" id="s04">
+    <div class="sheet-tag">Sheet S-04 &mdash; Skills</div>
+    <h2 class="sheet-title">Legend</h2>
+    <p class="sheet-kicker">Read like a drawing legend &mdash; symbols and codes standing in for tools and methods, grouped by discipline.</p>
+    <div class="dim"><span class="dim-seg"></span><span class="dim-label">6 CATEGORIES</span><span class="dim-seg"></span></div>
+
+    <div class="legend-grid">
+      <div class="legend-group">
+        <h3>Structural</h3>
+        <ul>
+          <li><span class="swatch" style="background:var(--steel)"></span>SAP2000 &amp; ETABS</li>
+          <li><span class="swatch" style="background:var(--steel)"></span>RC Design &mdash; ACI 318</li>
+          <li><span class="swatch" style="background:var(--steel)"></span>Steel Design &mdash; AISC 360</li>
+          <li><span class="swatch" style="background:var(--steel)"></span>Bridge Design &mdash; AASHTO LRFD</li>
+          <li><span class="swatch" style="background:var(--steel)"></span>Wood Design &mdash; NDS</li>
+        </ul>
+      </div>
+      <div class="legend-group">
+        <h3>Geotechnical</h3>
+        <ul>
+          <li><span class="swatch" style="background:url(#hatchSand)"></span>Foundation &amp; settlement design</li>
+          <li><span class="swatch" style="background:url(#hatchSand)"></span>Soil mechanics &amp; testing</li>
+          <li><span class="swatch" style="background:url(#hatchSand)"></span>Subgrade stabilization</li>
+        </ul>
+      </div>
+      <div class="legend-group">
+        <h3>FE Modeling</h3>
+        <ul>
+          <li><span class="swatch" style="background:var(--soil)"></span>PLAXIS 3D</li>
+          <li><span class="swatch" style="background:var(--soil)"></span>ANSYS Mechanical</li>
+          <li><span class="swatch" style="background:var(--soil)"></span>VecTor2 &mdash; nonlinear RC</li>
+          <li><span class="swatch" style="background:var(--soil)"></span>Soil&#8211;structure interaction</li>
+        </ul>
+      </div>
+      <div class="legend-group">
+        <h3>CFD &amp; Hydraulics</h3>
+        <ul>
+          <li><span class="swatch" style="background:var(--redline)"></span>FLOW&#8209;3D HYDRO</li>
+          <li><span class="swatch" style="background:var(--redline)"></span>Hydrodynamic modeling</li>
+          <li><span class="swatch" style="background:var(--redline)"></span>Bridge scour analysis</li>
+        </ul>
+      </div>
+      <div class="legend-group">
+        <h3>GIS &amp; Remote Sensing</h3>
+        <ul>
+          <li><span class="swatch" style="background:var(--ink-soft)"></span>ArcGIS Pro</li>
+          <li><span class="swatch" style="background:var(--ink-soft)"></span>Google Earth Engine</li>
+          <li><span class="swatch" style="background:var(--ink-soft)"></span>Geospatial analysis</li>
+        </ul>
+      </div>
+      <div class="legend-group">
+        <h3>CAD &amp; Programming</h3>
+        <ul>
+          <li><span class="swatch" style="background:var(--line-strong)"></span>AutoCAD &middot; ANSYS SpaceClaim</li>
+          <li><span class="swatch" style="background:var(--line-strong)"></span>Python &middot; MATLAB &middot; C</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== S-05 CONTACT / TITLE BLOCK ===================== -->
+  <section class="sheet" id="s05" style="border-bottom:none;">
+    <div class="sheet-tag">Sheet S-05 &mdash; Contact</div>
+    <h2 class="sheet-title">Title Block</h2>
+
+    <div class="titleblock">
+      <div class="tb-top">
+        <div class="tb-name">
+          <div class="who">Md. Ashrafuzzaman</div>
+          <div class="role mono">Structural &amp; Geotechnical Engineer, EIT Candidate</div>
+          <p>I'd welcome the chance to connect about structural or geotechnical engineering roles, research collaboration, or PhD opportunities. Reach out through any channel at right.</p>
+        </div>
+        <div class="tb-fields">
+          <div class="tb-field"><div class="fl">Email</div><div class="fv"><a href="mailto:mdashrafuzzamanfahim@gmail.com">mdashrafuzzamanfahim@gmail.com</a></div></div>
+          <div class="tb-field"><div class="fl">Phone</div><div class="fv num"><a href="tel:+12087769136">(+1) 208&#8209;776&#8209;9136</a></div></div>
+          <div class="tb-field"><div class="fl">LinkedIn</div><div class="fv"><a href="https://linkedin.com/in/md-ash" target="_blank" rel="noopener">linkedin.com/in/md&#8209;ash</a></div></div>
+          <div class="tb-field"><div class="fl">Location</div><div class="fv">Pocatello, Idaho</div></div>
+          <div class="tb-field"><div class="fl">Status</div><div class="fv">EIT Candidate &mdash; FE Civil, Sep 21 2026</div></div>
+          <div class="tb-field"><div class="fl">R&eacute;sum&eacute;</div><div class="fv"><a href="https://sites.google.com/isu.edu/md-ashrafuzzaman/resume" target="_blank" rel="noopener">Full PDF &#8594;</a></div></div>
+        </div>
+      </div>
+      <div class="tb-bottom">
+        <div class="scale">
+          <svg viewBox="0 0 90 14" aria-hidden="true"><line x1="1" y1="7" x2="89" y2="7" stroke="currentColor" stroke-width="1"></line><line x1="1" y1="3" x2="1" y2="11" stroke="currentColor" stroke-width="1"></line><line x1="45" y1="4" x2="45" y2="10" stroke="currentColor" stroke-width="1"></line><line x1="89" y1="3" x2="89" y2="11" stroke="currentColor" stroke-width="1"></line></svg>
+          <span>SCALE N.T.S.</span>
+        </div>
+        <div class="sheetno num">SHEET S&#8209;05 OF 05 &middot; REV. 2026.09</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p class="mono">DRAWN BY M. ASHRAFUZZAMAN &middot; POCATELLO, ID &middot; NOT FOR CONSTRUCTION</p>
+</footer>
