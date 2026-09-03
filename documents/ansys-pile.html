@@ -295,7 +295,7 @@
         <h2>Results</h2>
         <p>Across the four converged full-load steps, ANSYS consistently over-predicted settlement relative to both the field test and the original PLAXIS 3D thesis — anywhere from roughly +294% at the lightest load down to +84% at the heaviest converged step, with the gap narrowing steadily as load increased. That shrinking-but-persistent overestimate is explained by the reduced friction coefficients needed for convergence, by ANSYS's more generic (non-geotechnical) contact formulation compared to PLAXIS's purpose-built pile-soil interface elements, and by the coarser 1.0 m soil mesh relative to PLAXIS's very fine mesh.</p>
         <p>To get a complete Q-z curve, the same model was re-run at one-tenth the load, which converged across all eight steps. Because the soil model is genuinely nonlinear and path-dependent, those reduced-load settlements can't simply be scaled back up by 10× to estimate full-load behavior — the reduced run is treated as an independent, internally consistent dataset instead. Applying the Davisson offset method to that curve found no intersection between the settlement curve and the offset line within the tested range, meaning the pile had not reached ultimate capacity at the maximum applied load — placing UBC above 187.67 tonnes (full-scale equivalent). That's within 0.9% of the 186-tonne field benchmark, and it echoes the field test itself, which was a proof load rather than a load-to-failure test and likewise never observed a definitive failure point.</p>
-        <p>Lined up against every method used across both studies — field SLT (186.0 t), PLAXIS 3D very fine mesh (183.0 t, 1.6% from field), ANSYS reduced-load (>187.67 t, <0.9% from field), and the classical O'Neill & Reese and Meyerhof methods (~536–537 t, roughly 188% over) — the two finite-element platforms and the field test all land within a tight band of each other, while the classical analytical/empirical methods are off by a factor of nearly three.</p>
+        <p>Lined up against the field SLT (186.0 t), PLAXIS 3D very fine mesh (183.0 t, 1.6% from field), and ANSYS reduced-load (>187.67 t, <0.9% from field), the two finite-element platforms and the field test all land within a tight band of each other. Classical analytical and empirical methods (O'Neill & Reese; Meyerhof, SPT-based) were also run for a broader frame of reference, but diverged from the field result by a much wider margin than either FE platform did.</p>
       <div class="table-wrap">
       <table class="datatable">
         <thead>
@@ -305,12 +305,10 @@
           <tr><td>Field static load test</td><td class="num">186.0 t</td><td class="num">&mdash; (benchmark)</td></tr>
           <tr><td>PLAXIS 3D &middot; very fine mesh</td><td class="num">183.0 t</td><td class="num">&minus;1.6%</td></tr>
           <tr class="hl"><td>ANSYS Mechanical &middot; reduced&#8209;load, Davisson</td><td class="num">&gt;187.67 t</td><td class="num">&lt;0.9%</td></tr>
-          <tr><td>O'Neill &amp; Reese (analytical)</td><td class="num">&asymp;537 t</td><td class="num">+188%</td></tr>
-          <tr><td>Meyerhof, SPT&#8209;based (empirical)</td><td class="num">&asymp;536 t</td><td class="num">+188%</td></tr>
         </tbody>
       </table>
       </div>
-      <div class="exhibit-cap" style="margin:-10px 0 26px;"><b>Table.</b> Every method tested against the same TP&#8209;4 pile and BH&#8209;2 soil profile. The two finite&#8209;element platforms and the field test land within a tight band of each other; the classical analytical/empirical methods are off by a factor of nearly three.</div>
+      <div class="exhibit-cap" style="margin:-10px 0 26px;"><b>Table.</b> Every method tested against the same TP&#8209;4 pile and BH&#8209;2 soil profile. The two finite&#8209;element platforms and the field test land within a tight band of each other. (Classical analytical and empirical methods &mdash; O'Neill &amp; Reese, Meyerhof &mdash; were also run for a broader frame of reference and diverged by a much wider margin; omitted here pending a recheck of those hand calculations.)</div>
       </section>
       <section class="doc-section">
         <h2>Conclusion</h2>
