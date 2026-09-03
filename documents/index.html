@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documents — Md. Ashrafuzzaman</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;600;700;800&family=Big+Shoulders+Stencil+Display:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  /* ============ TOKENS ============ */
+  :root{
+    --paper:#1F3850;
+    --paper-raised:#28455F;
+    --paper-sunken:#17293A;
+    --ink:#ECE9E0;
+    --ink-soft:#AEB9C2;
+    --ink-faint:#7C8A96;
+    --line:#33506B;
+    --line-strong:#4A6883;
+    --steel:#9FC4D6;
+    --soil:#CDA05F;
+    --soil-fill:#5C3F22;
+    --soil-fill-2:#4A4A3C;
+    --redline:#E1602E;
+    --redline-soft:rgba(225,96,46,.18);
+    --shadow:rgba(0,0,0,.45);
+    --focus:#63B79E;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--redline-soft); color:var(--ink); }
+  a{ color:inherit; }
+  a:focus-visible, button:focus-visible, .navlink:focus-visible{
+    outline:2px solid var(--focus);
+    outline-offset:3px;
+    border-radius:2px;
+  }
+  h1,h2,h3{
+    font-family:'Big Shoulders Display',system-ui,sans-serif;
+    font-weight:700;
+    text-transform:uppercase;
+    text-wrap:balance;
+    margin:0;
+    letter-spacing:.01em;
+  }
+  .mono{ font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace; }
+  .num{ font-variant-numeric:tabular-nums; }
+  @media (prefers-reduced-motion:reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
+  }
+
+  .wrap{ max-width:1080px; margin:0 auto; padding-inline:clamp(20px,4vw,48px); }
+
+  .topbar{
+    position:sticky; top:0; z-index:40;
+    background:var(--paper);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar-inner{
+    max-width:1080px; margin:0 auto; padding:clamp(20px,4vw,48px);
+    padding-top:14px; padding-bottom:14px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px; flex-wrap:wrap;
+  }
+  .brand{
+    font-family:'Big Shoulders Display',sans-serif;
+    font-weight:700; font-size:1.05rem; text-transform:uppercase;
+    letter-spacing:.04em;
+    display:flex; align-items:baseline; gap:.5em;
+  }
+  .brand .b-sub{ font-family:'IBM Plex Mono',monospace; font-size:.6rem; color:var(--ink-faint); text-transform:none; letter-spacing:.02em; }
+  .sheetnav{ display:flex; gap:2px; flex-wrap:wrap; }
+  .navlink{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.68rem; letter-spacing:.03em;
+    text-decoration:none; color:var(--ink-soft);
+    padding:6px 10px; border:1px solid transparent; border-radius:2px;
+    white-space:nowrap;
+  }
+  .navlink:hover{ color:var(--ink); border-color:var(--line); background:var(--paper-raised); }
+
+  .sheet{ padding-block:clamp(48px,8vw,88px); border-bottom:1px solid var(--line); position:relative; }
+  .sheet:last-of-type{ border-bottom:none; }
+  .sheet-tag{
+    display:flex; align-items:center; gap:10px;
+    font-family:'IBM Plex Mono',monospace; font-size:.72rem;
+    letter-spacing:.06em; color:var(--steel); text-transform:uppercase;
+    margin-bottom:20px;
+  }
+  .sheet-tag::before{
+    content:""; display:inline-block; width:9px; height:9px;
+    border:1.5px solid var(--steel); transform:rotate(45deg); flex:none;
+  }
+  .sheet-title{ font-size:clamp(1.7rem,4vw,2.5rem); margin-bottom:8px; }
+  .sheet-kicker{ color:var(--ink-soft); max-width:60ch; font-size:1rem; margin-bottom:0;}
+
+  .dim{ display:flex; align-items:center; gap:14px; margin:2.6rem 0; }
+  .dim-seg{ flex:1; height:1px; background:var(--line-strong); position:relative; }
+  .dim-seg:first-child::before{
+    content:""; position:absolute; left:0; top:-3px; width:1px; height:7px; background:var(--line-strong);
+  }
+  .dim-seg:last-child::after{
+    content:""; position:absolute; right:0; top:-3px; width:1px; height:7px; background:var(--line-strong);
+  }
+  .dim-label{
+    font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.05em;
+    color:var(--redline); white-space:nowrap; padding:0 2px;
+  }
+
+  .btn{
+    font-family:'IBM Plex Mono',monospace; font-size:.78rem; letter-spacing:.03em;
+    text-decoration:none; padding:12px 18px; border:1.5px solid var(--ink);
+    color:var(--ink); text-transform:uppercase; transition:transform .12s ease;
+    display:inline-block;
+  }
+  .btn:hover{ transform:translateY(-2px); }
+  .btn.primary{ background:var(--redline); border-color:var(--redline); color:#F4EFE6; }
+  .btn.primary:hover{ background:var(--ink); border-color:var(--ink); }
+
+  footer{ padding:26px 0 48px; text-align:center; }
+  footer p{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--ink-faint); margin:0; }
+
+  /* ============ DOCUMENT PAGE ADDITIONS ============ */
+  .crumbs{ font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.03em; color:var(--ink-faint); margin-bottom:26px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding-top:26px; }
+  .crumbs a{ color:var(--steel); text-decoration:none; }
+  .crumbs a:hover{ color:var(--ink); text-decoration:underline; }
+  .crumbs .sep{ color:var(--line-strong); }
+  .crumbs .here{ color:var(--ink-soft); }
+
+  .doc-head{ padding-bottom:6px; }
+  .doc-eyebrow{ font-family:'IBM Plex Mono',monospace; font-size:.76rem; letter-spacing:.08em; color:var(--redline); text-transform:uppercase; margin-bottom:16px; display:flex; align-items:center; gap:10px; }
+  .doc-eyebrow::before{ content:""; display:inline-block; width:9px; height:9px; border:1.5px solid var(--redline); transform:rotate(45deg); flex:none; }
+  .doc-title{ font-size:clamp(1.9rem,4.2vw,2.85rem); line-height:1.05; margin-bottom:16px; max-width:22ch; }
+  .doc-meta{ font-family:'IBM Plex Mono',monospace; font-size:.82rem; color:var(--steel); margin-bottom:22px; }
+  .doc-lede{ color:var(--ink-soft); max-width:68ch; font-size:1.04rem; margin-bottom:28px; }
+  .doc-cta{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:10px; }
+  .doc-filenote{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--ink-faint); }
+
+  .spec-strip{ display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--line); background:var(--paper-raised); margin:38px 0 6px; }
+  .spec-tile{ padding:18px 18px; border-left:1px solid var(--line); }
+  .spec-tile:first-child{ border-left:none; }
+  .spec-tile .sl{ font-family:'IBM Plex Mono',monospace; font-size:.62rem; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:8px; }
+  .spec-tile .sv{ font-family:'Big Shoulders Display',sans-serif; font-weight:700; font-size:1.32rem; color:var(--ink); line-height:1.15; }
+  .spec-tile .sv .unit{ font-size:.95rem; color:var(--steel); }
+  .spec-tile .sd{ font-family:'IBM Plex Mono',monospace; font-weight:400; font-size:.68rem; color:var(--ink-faint); margin-top:4px; }
+
+  .doc-prose{ margin-top:8px; }
+  .doc-prose h2{ font-size:1.42rem; margin:0 0 14px; }
+  .doc-prose p{ color:var(--ink-soft); margin:0 0 16px; max-width:70ch; font-size:1rem; line-height:1.72; }
+  .doc-prose p:last-child{ margin-bottom:0; }
+  .doc-section{ margin-bottom:40px; }
+  .doc-section:last-child{ margin-bottom:0; }
+
+  .exhibit{ margin:22px 0 26px; max-width:640px; }
+  .exhibit-frame{ background:#F4EFE6; border:1px solid var(--line-strong); padding:12px; }
+  .exhibit-frame img{ width:100%; display:block; }
+  .exhibit-cap{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--ink-faint); margin-top:10px; letter-spacing:.01em; line-height:1.5; }
+
+  .hero-exhibit{ margin:8px 0 40px; }
+  .hero-exhibit .exhibit-frame{ padding:16px; }
+  .hero-exhibit{ max-width:none; }
+
+  .datatable{ width:100%; border-collapse:collapse; margin:22px 0 26px; font-family:'IBM Plex Mono',monospace; font-size:.82rem; }
+  .datatable th, .datatable td{ border:1px solid var(--line); padding:10px 12px; text-align:left; }
+  .datatable th{ background:var(--paper-raised); color:var(--steel); font-weight:600; text-transform:uppercase; font-size:.68rem; letter-spacing:.04em; }
+  .datatable td.num{ font-variant-numeric:tabular-nums; }
+  .datatable tr.hl td{ color:var(--redline); }
+  .table-wrap{ overflow-x:auto; }
+
+  .companion{ margin-top:44px; background:var(--paper-raised); border:1px solid var(--line); padding:20px 22px; display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; }
+  .companion p{ margin:0; color:var(--ink-soft); font-size:.9rem; max-width:52ch; }
+  .companion a.btn{ flex:none; }
+
+  .pagenav{ display:flex; gap:1px; margin-top:56px; background:var(--line); border:1px solid var(--line); }
+  .pagenav a{ flex:1; background:var(--paper); font-family:'IBM Plex Mono',monospace; font-size:.74rem; color:var(--ink-soft); text-decoration:none; padding:16px 18px; }
+  .pagenav a:hover{ background:var(--paper-raised); color:var(--ink); }
+  .pagenav a.next{ text-align:right; }
+  .pagenav .lbl{ display:block; color:var(--ink-faint); font-size:.62rem; margin-bottom:6px; text-transform:uppercase; letter-spacing:.05em; }
+
+  /* ============ HUB PAGE ============ */
+  .hub-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--line); border:1px solid var(--line); margin-top:8px; }
+  .hub-card{ background:var(--paper); padding:0 0 24px; display:flex; flex-direction:column; text-decoration:none; color:inherit; }
+  .hub-card:hover{ background:var(--paper-raised); }
+  .hub-thumb{ aspect-ratio:16/10; overflow:hidden; border-bottom:1px solid var(--line); background:#F4EFE6; }
+  .hub-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .hub-body{ padding:20px 22px 0; display:flex; flex-direction:column; gap:9px; flex:1; }
+  .hub-num{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--ink-faint); letter-spacing:.04em; }
+  .hub-title{ font-family:'Big Shoulders Display',sans-serif; font-weight:700; font-size:1.14rem; text-transform:uppercase; line-height:1.12; }
+  .hub-meta{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--steel); }
+  .hub-desc{ color:var(--ink-soft); font-size:.87rem; line-height:1.55; flex:1; }
+  .hub-go{ font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--redline); letter-spacing:.03em; margin-top:6px; }
+  .hub-card:hover .hub-go{ text-decoration:underline; }
+
+  @media (max-width:760px){
+    .spec-strip{ grid-template-columns:repeat(2,1fr); }
+    .spec-tile:nth-child(3){ border-left:none; }
+    .spec-tile:nth-child(1), .spec-tile:nth-child(2){ border-bottom:1px solid var(--line); }
+    .hub-grid{ grid-template-columns:1fr; }
+    .pagenav{ flex-direction:column; }
+  }
+
+
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" style="text-decoration:none;color:inherit;"><div class="brand">MD. ASHRAFUZZAMAN <span class="b-sub">// CIVIL</span></div></a>
+    <nav class="sheetnav" aria-label="Sheet index">
+      <a class="navlink" href="../index.html#s03">&larr; PORTFOLIO</a>
+      <a class="navlink" href="index.html">DOCUMENTS INDEX</a>
+    </nav>
+  </div>
+</div>
+
+  <div class="wrap">
+    <div class="crumbs">
+      <a href="../index.html">PORTFOLIO</a><span class="sep">/</span>
+      <span class="here">DOCUMENTS</span>
+    </div>
+  </div>
+
+<main class="wrap">
+  <section class="sheet" style="padding-top:6px;">
+    <div class="sheet-tag">Sheet S&#8209;03 &mdash; Full Drawing Set</div>
+    <h1 class="sheet-title">Documents</h1>
+    <p class="sheet-kicker">Full write&#8209;ups for four of the projects on Sheet S&#8209;03: abstract, method, and results for each, plus the complete report as a downloadable PDF. Trimmed for reading here &mdash; the PDFs carry the full procedural detail.</p>
+    <div class="dim"><span class="dim-seg"></span><span class="dim-label">4 REPORTS</span><span class="dim-seg"></span></div>
+
+    <div class="hub-grid">
+      <a class="hub-card" href="thesis.html">
+        <div class="hub-thumb"><img src="img/thesis-hero.jpg" alt="B.Sc. Thesis: Pile Static Load Tests in PLAXIS&nbsp;3D" loading="lazy"></div>
+        <div class="hub-body">
+          <div class="hub-num mono">SHEET S&#8209;03.1</div>
+          <div class="hub-title">B.Sc. Thesis: Pile Static Load Tests in PLAXIS&nbsp;3D</div>
+          <div class="hub-meta">BUET &middot; 2023&#8211;2024</div>
+          <p class="hub-desc">A finite-element pile model benchmarked against a real static load test in Dhaka &mdash; within 1.6% of the field result.</p>
+          <div class="hub-go">View full sheet &rarr;</div>
+        </div>
+      </a>
+      <a class="hub-card" href="cfd-scour.html">
+        <div class="hub-thumb"><img src="img/cfd-hero.jpg" alt="CFD Scour Simulation of a Bridge Pier" loading="lazy"></div>
+        <div class="hub-body">
+          <div class="hub-num mono">SHEET S&#8209;03.2</div>
+          <div class="hub-title">CFD Scour Simulation of a Bridge Pier</div>
+          <div class="hub-meta">FLOW&#8209;3D HYDRO &middot; ISU, Spring 2026</div>
+          <p class="hub-desc">3D CFD of the horseshoe-vortex scour mechanism, validated against a published laboratory benchmark.</p>
+          <div class="hub-go">View full sheet &rarr;</div>
+        </div>
+      </a>
+      <a class="hub-card" href="ansys-pile.html">
+        <div class="hub-thumb"><img src="img/thesis-mesh.jpg" alt="Axial Pile Load&#8211;Settlement FE in ANSYS" loading="lazy"></div>
+        <div class="hub-body">
+          <div class="hub-num mono">SHEET S&#8209;03.3</div>
+          <div class="hub-title">Axial Pile Load&#8211;Settlement FE in ANSYS</div>
+          <div class="hub-meta">CE 6665 &middot; ISU, Spring 2026</div>
+          <p class="hub-desc">The same pile rebuilt in a general-purpose FEM tool &mdash; and what it cost, numerically, to get there.</p>
+          <div class="hub-go">View full sheet &rarr;</div>
+        </div>
+      </a>
+      <a class="hub-card" href="dead-sea-gis.html">
+        <div class="hub-thumb"><img src="img/deadsea-hero.jpg" alt="GIS Shoreline Change, Dead Sea 1984&#8211;2021" loading="lazy"></div>
+        <div class="hub-body">
+          <div class="hub-num mono">SHEET S&#8209;03.4</div>
+          <div class="hub-title">GIS Shoreline Change, Dead Sea 1984&#8211;2021</div>
+          <div class="hub-meta">Advanced GIS &middot; ISU, Spring 2026</div>
+          <p class="hub-desc">Six years of satellite water-classification rasters, independently measured in ArcGIS Pro.</p>
+          <div class="hub-go">View full sheet &rarr;</div>
+        </div>
+      </a>
+    </div>
+
+  </section>
+</main>
+
+<footer>
+  <p class="mono">Drawing set maintained by Md. Ashrafuzzaman &middot; last revised 2026 &middot; <a href="../index.html" style="color:inherit;">back to portfolio</a></p>
+</footer>
+</body>
+</html>

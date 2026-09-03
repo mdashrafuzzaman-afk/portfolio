@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Axial Pile Load&#8211;Settlement FE in ANSYS — Md. Ashrafuzzaman</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;600;700;800&family=Big+Shoulders+Stencil+Display:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  /* ============ TOKENS ============ */
+  :root{
+    --paper:#1F3850;
+    --paper-raised:#28455F;
+    --paper-sunken:#17293A;
+    --ink:#ECE9E0;
+    --ink-soft:#AEB9C2;
+    --ink-faint:#7C8A96;
+    --line:#33506B;
+    --line-strong:#4A6883;
+    --steel:#9FC4D6;
+    --soil:#CDA05F;
+    --soil-fill:#5C3F22;
+    --soil-fill-2:#4A4A3C;
+    --redline:#E1602E;
+    --redline-soft:rgba(225,96,46,.18);
+    --shadow:rgba(0,0,0,.45);
+    --focus:#63B79E;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--redline-soft); color:var(--ink); }
+  a{ color:inherit; }
+  a:focus-visible, button:focus-visible, .navlink:focus-visible{
+    outline:2px solid var(--focus);
+    outline-offset:3px;
+    border-radius:2px;
+  }
+  h1,h2,h3{
+    font-family:'Big Shoulders Display',system-ui,sans-serif;
+    font-weight:700;
+    text-transform:uppercase;
+    text-wrap:balance;
+    margin:0;
+    letter-spacing:.01em;
+  }
+  .mono{ font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace; }
+  .num{ font-variant-numeric:tabular-nums; }
+  @media (prefers-reduced-motion:reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
+  }
+
+  .wrap{ max-width:1080px; margin:0 auto; padding-inline:clamp(20px,4vw,48px); }
+
+  .topbar{
+    position:sticky; top:0; z-index:40;
+    background:var(--paper);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar-inner{
+    max-width:1080px; margin:0 auto; padding:clamp(20px,4vw,48px);
+    padding-top:14px; padding-bottom:14px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px; flex-wrap:wrap;
+  }
+  .brand{
+    font-family:'Big Shoulders Display',sans-serif;
+    font-weight:700; font-size:1.05rem; text-transform:uppercase;
+    letter-spacing:.04em;
+    display:flex; align-items:baseline; gap:.5em;
+  }
+  .brand .b-sub{ font-family:'IBM Plex Mono',monospace; font-size:.6rem; color:var(--ink-faint); text-transform:none; letter-spacing:.02em; }
+  .sheetnav{ display:flex; gap:2px; flex-wrap:wrap; }
+  .navlink{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.68rem; letter-spacing:.03em;
+    text-decoration:none; color:var(--ink-soft);
+    padding:6px 10px; border:1px solid transparent; border-radius:2px;
+    white-space:nowrap;
+  }
+  .navlink:hover{ color:var(--ink); border-color:var(--line); background:var(--paper-raised); }
+
+  .sheet{ padding-block:clamp(48px,8vw,88px); border-bottom:1px solid var(--line); position:relative; }
+  .sheet:last-of-type{ border-bottom:none; }
+  .sheet-tag{
+    display:flex; align-items:center; gap:10px;
+    font-family:'IBM Plex Mono',monospace; font-size:.72rem;
+    letter-spacing:.06em; color:var(--steel); text-transform:uppercase;
+    margin-bottom:20px;
+  }
+  .sheet-tag::before{
+    content:""; display:inline-block; width:9px; height:9px;
+    border:1.5px solid var(--steel); transform:rotate(45deg); flex:none;
+  }
+  .sheet-title{ font-size:clamp(1.7rem,4vw,2.5rem); margin-bottom:8px; }
+  .sheet-kicker{ color:var(--ink-soft); max-width:60ch; font-size:1rem; margin-bottom:0;}
+
+  .dim{ display:flex; align-items:center; gap:14px; margin:2.6rem 0; }
+  .dim-seg{ flex:1; height:1px; background:var(--line-strong); position:relative; }
+  .dim-seg:first-child::before{
+    content:""; position:absolute; left:0; top:-3px; width:1px; height:7px; background:var(--line-strong);
+  }
+  .dim-seg:last-child::after{
+    content:""; position:absolute; right:0; top:-3px; width:1px; height:7px; background:var(--line-strong);
+  }
+  .dim-label{
+    font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.05em;
+    color:var(--redline); white-space:nowrap; padding:0 2px;
+  }
+
+  .btn{
+    font-family:'IBM Plex Mono',monospace; font-size:.78rem; letter-spacing:.03em;
+    text-decoration:none; padding:12px 18px; border:1.5px solid var(--ink);
+    color:var(--ink); text-transform:uppercase; transition:transform .12s ease;
+    display:inline-block;
+  }
+  .btn:hover{ transform:translateY(-2px); }
+  .btn.primary{ background:var(--redline); border-color:var(--redline); color:#F4EFE6; }
+  .btn.primary:hover{ background:var(--ink); border-color:var(--ink); }
+
+  footer{ padding:26px 0 48px; text-align:center; }
+  footer p{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--ink-faint); margin:0; }
+
+  /* ============ DOCUMENT PAGE ADDITIONS ============ */
+  .crumbs{ font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.03em; color:var(--ink-faint); margin-bottom:26px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding-top:26px; }
+  .crumbs a{ color:var(--steel); text-decoration:none; }
+  .crumbs a:hover{ color:var(--ink); text-decoration:underline; }
+  .crumbs .sep{ color:var(--line-strong); }
+  .crumbs .here{ color:var(--ink-soft); }
+
+  .doc-head{ padding-bottom:6px; }
+  .doc-eyebrow{ font-family:'IBM Plex Mono',monospace; font-size:.76rem; letter-spacing:.08em; color:var(--redline); text-transform:uppercase; margin-bottom:16px; display:flex; align-items:center; gap:10px; }
+  .doc-eyebrow::before{ content:""; display:inline-block; width:9px; height:9px; border:1.5px solid var(--redline); transform:rotate(45deg); flex:none; }
+  .doc-title{ font-size:clamp(1.9rem,4.2vw,2.85rem); line-height:1.05; margin-bottom:16px; max-width:22ch; }
+  .doc-meta{ font-family:'IBM Plex Mono',monospace; font-size:.82rem; color:var(--steel); margin-bottom:22px; }
+  .doc-lede{ color:var(--ink-soft); max-width:68ch; font-size:1.04rem; margin-bottom:28px; }
+  .doc-cta{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:10px; }
+  .doc-filenote{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--ink-faint); }
+
+  .spec-strip{ display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--line); background:var(--paper-raised); margin:38px 0 6px; }
+  .spec-tile{ padding:18px 18px; border-left:1px solid var(--line); }
+  .spec-tile:first-child{ border-left:none; }
+  .spec-tile .sl{ font-family:'IBM Plex Mono',monospace; font-size:.62rem; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:8px; }
+  .spec-tile .sv{ font-family:'Big Shoulders Display',sans-serif; font-weight:700; font-size:1.32rem; color:var(--ink); line-height:1.15; }
+  .spec-tile .sv .unit{ font-size:.95rem; color:var(--steel); }
+  .spec-tile .sd{ font-family:'IBM Plex Mono',monospace; font-weight:400; font-size:.68rem; color:var(--ink-faint); margin-top:4px; }
+
+  .doc-prose{ margin-top:8px; }
+  .doc-prose h2{ font-size:1.42rem; margin:0 0 14px; }
+  .doc-prose p{ color:var(--ink-soft); margin:0 0 16px; max-width:70ch; font-size:1rem; line-height:1.72; }
+  .doc-prose p:last-child{ margin-bottom:0; }
+  .doc-section{ margin-bottom:40px; }
+  .doc-section:last-child{ margin-bottom:0; }
+
+  .exhibit{ margin:22px 0 26px; max-width:640px; }
+  .exhibit-frame{ background:#F4EFE6; border:1px solid var(--line-strong); padding:12px; }
+  .exhibit-frame img{ width:100%; display:block; }
+  .exhibit-cap{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--ink-faint); margin-top:10px; letter-spacing:.01em; line-height:1.5; }
+
+  .hero-exhibit{ margin:8px 0 40px; }
+  .hero-exhibit .exhibit-frame{ padding:16px; }
+  .hero-exhibit{ max-width:none; }
+
+  .datatable{ width:100%; border-collapse:collapse; margin:22px 0 26px; font-family:'IBM Plex Mono',monospace; font-size:.82rem; }
+  .datatable th, .datatable td{ border:1px solid var(--line); padding:10px 12px; text-align:left; }
+  .datatable th{ background:var(--paper-raised); color:var(--steel); font-weight:600; text-transform:uppercase; font-size:.68rem; letter-spacing:.04em; }
+  .datatable td.num{ font-variant-numeric:tabular-nums; }
+  .datatable tr.hl td{ color:var(--redline); }
+  .table-wrap{ overflow-x:auto; }
+
+  .companion{ margin-top:44px; background:var(--paper-raised); border:1px solid var(--line); padding:20px 22px; display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; }
+  .companion p{ margin:0; color:var(--ink-soft); font-size:.9rem; max-width:52ch; }
+  .companion a.btn{ flex:none; }
+
+  .pagenav{ display:flex; gap:1px; margin-top:56px; background:var(--line); border:1px solid var(--line); }
+  .pagenav a{ flex:1; background:var(--paper); font-family:'IBM Plex Mono',monospace; font-size:.74rem; color:var(--ink-soft); text-decoration:none; padding:16px 18px; }
+  .pagenav a:hover{ background:var(--paper-raised); color:var(--ink); }
+  .pagenav a.next{ text-align:right; }
+  .pagenav .lbl{ display:block; color:var(--ink-faint); font-size:.62rem; margin-bottom:6px; text-transform:uppercase; letter-spacing:.05em; }
+
+  /* ============ HUB PAGE ============ */
+  .hub-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--line); border:1px solid var(--line); margin-top:8px; }
+  .hub-card{ background:var(--paper); padding:0 0 24px; display:flex; flex-direction:column; text-decoration:none; color:inherit; }
+  .hub-card:hover{ background:var(--paper-raised); }
+  .hub-thumb{ aspect-ratio:16/10; overflow:hidden; border-bottom:1px solid var(--line); background:#F4EFE6; }
+  .hub-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .hub-body{ padding:20px 22px 0; display:flex; flex-direction:column; gap:9px; flex:1; }
+  .hub-num{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--ink-faint); letter-spacing:.04em; }
+  .hub-title{ font-family:'Big Shoulders Display',sans-serif; font-weight:700; font-size:1.14rem; text-transform:uppercase; line-height:1.12; }
+  .hub-meta{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--steel); }
+  .hub-desc{ color:var(--ink-soft); font-size:.87rem; line-height:1.55; flex:1; }
+  .hub-go{ font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--redline); letter-spacing:.03em; margin-top:6px; }
+  .hub-card:hover .hub-go{ text-decoration:underline; }
+
+  @media (max-width:760px){
+    .spec-strip{ grid-template-columns:repeat(2,1fr); }
+    .spec-tile:nth-child(3){ border-left:none; }
+    .spec-tile:nth-child(1), .spec-tile:nth-child(2){ border-bottom:1px solid var(--line); }
+    .hub-grid{ grid-template-columns:1fr; }
+    .pagenav{ flex-direction:column; }
+  }
+
+
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" style="text-decoration:none;color:inherit;"><div class="brand">MD. ASHRAFUZZAMAN <span class="b-sub">// CIVIL</span></div></a>
+    <nav class="sheetnav" aria-label="Sheet index">
+      <a class="navlink" href="../index.html#s03">&larr; PORTFOLIO</a>
+      <a class="navlink" href="index.html">DOCUMENTS INDEX</a>
+    </nav>
+  </div>
+</div>
+
+  <div class="wrap">
+    <div class="crumbs">
+      <a href="../index.html">PORTFOLIO</a><span class="sep">/</span>
+      <a href="index.html">DOCUMENTS</a><span class="sep">/</span>
+      <span class="here">SHEET S&#8209;03.3</span>
+    </div>
+  </div>
+
+<main class="wrap">
+  <section class="sheet doc-head" style="padding-top:6px;">
+    <div class="doc-eyebrow">Sheet S&#8209;03.3 &mdash; Full Record</div>
+    <h1 class="doc-title">Axial Pile Load&#8211;Settlement FE in ANSYS</h1>
+    <div class="doc-meta mono">Finite Element Methods in Civil Eng. (CE 6665), ISU &middot; Spring 2026</div>
+    <p class="doc-lede">A direct follow&#8209;up to the PLAXIS 3D thesis: could a general&#8209;purpose structural FEM tool, ANSYS Mechanical, reproduce the same field pile load test? Rebuilding the identical pile&#8209;soil system in ANSYS turned out to need real numerical troubleshooting that PLAXIS's specialized geotechnical solver never did.</p>
+    <div class="doc-cta">
+      <a class="btn primary" href="files/ansys-pile-report.pdf" download>Download Full Report (PDF)</a>
+      <a class="btn" href="index.html">All Documents</a>
+    </div>
+    <div class="doc-filenote">PDF &middot; 828 KB</div>
+
+      <div class="spec-strip">
+        <div class="spec-tile">
+          <div class="sl">UBC &middot; Davisson, reduced&#8209;load</div>
+          <div class="sv num">&gt;187.67<span class="unit">t</span></div>
+          <div class="sd">no intersection within tested range</div>
+        </div>
+        <div class="spec-tile">
+          <div class="sl">Field benchmark</div>
+          <div class="sv num">186<span class="unit">t</span></div>
+          <div class="sd">same TP&#8209;4 pile as the thesis</div>
+        </div>
+        <div class="spec-tile">
+          <div class="sl">Deviation from field</div>
+          <div class="sv num">&lt;0.9<span class="unit">%</span></div>
+          <div class="sd">closer than the PLAXIS 3D estimate</div>
+        </div>
+        <div class="spec-tile">
+          <div class="sl">Mesh size</div>
+          <div class="sv num">&asymp;35,700</div>
+          <div class="sd">nodes, vs. 128,000 Student license cap</div>
+        </div>
+      </div>
+
+
+
+    <div class="doc-prose">
+      <section class="doc-section">
+        <h2>Abstract</h2>
+        <p>This project asks a direct follow-up question to my BUET B.Sc. thesis: the thesis showed that PLAXIS 3D — software purpose-built for geotechnical analysis — could reproduce a real static pile load test within 1.6% of the field result. Could a general-purpose structural FEM tool, ANSYS Mechanical, do the same? For CE 6665 (Finite Element Methods in Civil Engineering) at Idaho State University, I rebuilt the identical pile-soil system — same site, same pile, same soil parameters, same eight-step loading protocol — inside ANSYS Mechanical 2025 R2 (Student Edition) to find out.</p>
+        <p>The model represented a 558.8 mm diameter, 13 m long cast-in-place concrete pile embedded in five stratified soil layers, using the Mohr-Coulomb constitutive model for soil plasticity and frictional contact elements at every pile-soil interface. Under full loading, the solver converged for the first four of eight load steps (up to 99.96 tonnes) before diverging. Running the same model at one-tenth the load let it converge across all eight steps, producing a complete load-settlement curve; applying the Davisson method to that curve placed the pile's ultimate bearing capacity above 187.67 tonnes — within 0.9% of the 186-tonne field benchmark, and consistent with the field test itself, which was a proof load rather than a load-to-failure test. The larger finding, though, is about the tools themselves: ANSYS can get to a physically reasonable answer, but only after real numerical wrangling that PLAXIS 3D's specialized geotechnical solver simply doesn't require.</p>
+      </section>
+      <section class="doc-section">
+        <h2>Why extend the thesis into ANSYS</h2>
+        <p>Most civil and structural engineers have access to general-purpose FEM packages like ANSYS but not always to specialized geotechnical software like PLAXIS. If ANSYS could reproduce field pile behavior with reasonable accuracy, that would be genuinely useful — it would mean geotechnical soil-structure problems don't strictly require specialized software. But if it couldn't, understanding exactly why (and where the difficulty actually comes from) is just as valuable, because it tells an engineer what to watch for before trusting a general-purpose FEM result on a soil-structure problem. This project set out to answer both questions honestly rather than assume the answer either way.</p>
+      </section>
+      <section class="doc-section">
+        <h2>Model and approach</h2>
+        <p>The soil profile, material parameters, and loading protocol were all carried over directly from the original PLAXIS 3D thesis, so any difference in results could be attributed to the software and solver rather than to different inputs. Geometry was built in ANSYS DesignModeler: a 8.4 m × 8.4 m by 30.48 m deep soil domain, sliced into five layer bodies at the correct depths, with the pile itself split into four segments corresponding to the layers it passes through, and "Share Topology" applied across all nine bodies to enforce continuous displacement at every interface. The resulting mesh — 1.0 m in the soil, refined to 0.2 m along the pile — totaled about 35,700 nodes, comfortably inside the 128,000-node ceiling of the ANSYS Student license.</p>
+        <p>Frictional contact pairs at each pile-soil interface used a friction coefficient derived the same way PLAXIS's Rinter interface-reduction approach does (μ = Rinter × tan φ), which should, in principle, carry the same physical meaning across both programs. Load was applied as a downward axial force on the pile head in the same eight increments used in the field test and the original thesis.</p>
+      </section>
+      <section class="doc-section">
+        <h2>Convergence troubleshooting</h2>
+        <p>The first full-load solve failed almost immediately — element distortion, contact-penetration warnings, and a Newton-Raphson solver that couldn't reach equilibrium. Rather than treating that as simply "ANSYS doesn't work for this," the model was diagnosed methodically: every soil layer was temporarily switched to linear elastic (removing the Mohr-Coulomb plasticity entirely) and run under a small test load. That diagnostic run converged instantly with a physically sensible settlement, confirming the geometry, boundary conditions, contacts, and mesh were all correct — the failure was specifically coming from the combination of soil plasticity and high friction coefficients, not from a modeling mistake elsewhere.</p>
+        <p>With that isolated, plasticity was reintroduced and the interface friction coefficients for the silt and sand layers were reduced from their theoretical values (0.433 and 0.904) down to 0.200, the threshold ANSYS's documentation identifies as the stability limit for its default contact formulation. That's a real, physically interpretable trade-off (it corresponds to a lower effective interface friction angle, conservative but not unreasonable for a bored pile) rather than an arbitrary fudge, and it's flagged as one of the clearest quantitative limitations of using a general-purpose tool for this problem. Even with that adjustment, the full-load run only converged through step 4 of 8 (99.96 tonnes) — beyond that point, soil yielding and contact-sliding transitions were compounding on top of each other faster than the solver could resolve them.</p>
+      </section>
+      <section class="doc-section">
+        <h2>Results</h2>
+        <p>Across the four converged full-load steps, ANSYS consistently over-predicted settlement relative to both the field test and the original PLAXIS 3D thesis — anywhere from roughly +294% at the lightest load down to +84% at the heaviest converged step, with the gap narrowing steadily as load increased. That shrinking-but-persistent overestimate is explained by the reduced friction coefficients needed for convergence, by ANSYS's more generic (non-geotechnical) contact formulation compared to PLAXIS's purpose-built pile-soil interface elements, and by the coarser 1.0 m soil mesh relative to PLAXIS's very fine mesh.</p>
+        <p>To get a complete Q-z curve, the same model was re-run at one-tenth the load, which converged across all eight steps. Because the soil model is genuinely nonlinear and path-dependent, those reduced-load settlements can't simply be scaled back up by 10× to estimate full-load behavior — the reduced run is treated as an independent, internally consistent dataset instead. Applying the Davisson offset method to that curve found no intersection between the settlement curve and the offset line within the tested range, meaning the pile had not reached ultimate capacity at the maximum applied load — placing UBC above 187.67 tonnes (full-scale equivalent). That's within 0.9% of the 186-tonne field benchmark, and it echoes the field test itself, which was a proof load rather than a load-to-failure test and likewise never observed a definitive failure point.</p>
+        <p>Lined up against every method used across both studies — field SLT (186.0 t), PLAXIS 3D very fine mesh (183.0 t, 1.6% from field), ANSYS reduced-load (>187.67 t, <0.9% from field), and the classical O'Neill & Reese and Meyerhof methods (~536–537 t, roughly 188% over) — the two finite-element platforms and the field test all land within a tight band of each other, while the classical analytical/empirical methods are off by a factor of nearly three.</p>
+      <div class="table-wrap">
+      <table class="datatable">
+        <thead>
+          <tr><th>Method</th><th>Estimated UBC</th><th>vs. field benchmark</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Field static load test</td><td class="num">186.0 t</td><td class="num">&mdash; (benchmark)</td></tr>
+          <tr><td>PLAXIS 3D &middot; very fine mesh</td><td class="num">183.0 t</td><td class="num">&minus;1.6%</td></tr>
+          <tr class="hl"><td>ANSYS Mechanical &middot; reduced&#8209;load, Davisson</td><td class="num">&gt;187.67 t</td><td class="num">&lt;0.9%</td></tr>
+          <tr><td>O'Neill &amp; Reese (analytical)</td><td class="num">&asymp;537 t</td><td class="num">+188%</td></tr>
+          <tr><td>Meyerhof, SPT&#8209;based (empirical)</td><td class="num">&asymp;536 t</td><td class="num">+188%</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="exhibit-cap" style="margin:-10px 0 26px;"><b>Table.</b> Every method tested against the same TP&#8209;4 pile and BH&#8209;2 soil profile. The two finite&#8209;element platforms and the field test land within a tight band of each other; the classical analytical/empirical methods are off by a factor of nearly three.</div>
+      </section>
+      <section class="doc-section">
+        <h2>Conclusion</h2>
+        <p>ANSYS Mechanical can produce a physically meaningful ultimate-bearing-capacity estimate for a pile foundation, and in this case it landed within 1% of the field benchmark — but only after real numerical stabilization work (reduced friction coefficients, a coarser mesh, a load-reduction workaround for the full curve) that PLAXIS 3D's specialized geotechnical solver never needed. PLAXIS 3D remains the better tool for this specific class of problem: it converged at full, unreduced parameters and produced a definitive Davisson intersection rather than a lower-bound estimate. But the comparison is genuinely useful in its own right — it gives a concrete, quantified picture of exactly what an engineer gains by using specialized geotechnical software over a general-purpose structural FEM tool, and exactly what it costs (in friction-coefficient compromises and settlement accuracy) to make the general-purpose tool work instead.</p>
+      </section>
+    </div>
+
+    <div class="companion">
+      <p><b>Builds on.</b> This project reuses the exact site, pile, soil parameters, and loading protocol from the original PLAXIS 3D thesis &mdash; so any difference in results comes from the software and solver, not the inputs.</p>
+      <a class="btn" href="thesis.html">Read the PLAXIS 3D thesis &rarr;</a>
+    </div>
+
+    <div class="pagenav">
+      <a class="prev" href="cfd-scour.html"><span class="lbl">&larr; Previous</span>CFD Scour Simulation of a Bridge Pier</a>
+      <a class="next" href="dead-sea-gis.html"><span class="lbl">Next &rarr;</span>GIS Shoreline Change, Dead Sea 1984&#8211;2021</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p class="mono">Drawing set maintained by Md. Ashrafuzzaman &middot; last revised 2026 &middot; <a href="../index.html" style="color:inherit;">back to portfolio</a></p>
+</footer>
+</body>
+</html>

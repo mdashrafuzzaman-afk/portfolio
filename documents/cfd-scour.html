@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CFD Scour Simulation of a Bridge Pier — Md. Ashrafuzzaman</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;600;700;800&family=Big+Shoulders+Stencil+Display:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  /* ============ TOKENS ============ */
+  :root{
+    --paper:#1F3850;
+    --paper-raised:#28455F;
+    --paper-sunken:#17293A;
+    --ink:#ECE9E0;
+    --ink-soft:#AEB9C2;
+    --ink-faint:#7C8A96;
+    --line:#33506B;
+    --line-strong:#4A6883;
+    --steel:#9FC4D6;
+    --soil:#CDA05F;
+    --soil-fill:#5C3F22;
+    --soil-fill-2:#4A4A3C;
+    --redline:#E1602E;
+    --redline-soft:rgba(225,96,46,.18);
+    --shadow:rgba(0,0,0,.45);
+    --focus:#63B79E;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--redline-soft); color:var(--ink); }
+  a{ color:inherit; }
+  a:focus-visible, button:focus-visible, .navlink:focus-visible{
+    outline:2px solid var(--focus);
+    outline-offset:3px;
+    border-radius:2px;
+  }
+  h1,h2,h3{
+    font-family:'Big Shoulders Display',system-ui,sans-serif;
+    font-weight:700;
+    text-transform:uppercase;
+    text-wrap:balance;
+    margin:0;
+    letter-spacing:.01em;
+  }
+  .mono{ font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace; }
+  .num{ font-variant-numeric:tabular-nums; }
+  @media (prefers-reduced-motion:reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
+  }
+
+  .wrap{ max-width:1080px; margin:0 auto; padding-inline:clamp(20px,4vw,48px); }
+
+  .topbar{
+    position:sticky; top:0; z-index:40;
+    background:var(--paper);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar-inner{
+    max-width:1080px; margin:0 auto; padding:clamp(20px,4vw,48px);
+    padding-top:14px; padding-bottom:14px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px; flex-wrap:wrap;
+  }
+  .brand{
+    font-family:'Big Shoulders Display',sans-serif;
+    font-weight:700; font-size:1.05rem; text-transform:uppercase;
+    letter-spacing:.04em;
+    display:flex; align-items:baseline; gap:.5em;
+  }
+  .brand .b-sub{ font-family:'IBM Plex Mono',monospace; font-size:.6rem; color:var(--ink-faint); text-transform:none; letter-spacing:.02em; }
+  .sheetnav{ display:flex; gap:2px; flex-wrap:wrap; }
+  .navlink{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.68rem; letter-spacing:.03em;
+    text-decoration:none; color:var(--ink-soft);
+    padding:6px 10px; border:1px solid transparent; border-radius:2px;
+    white-space:nowrap;
+  }
+  .navlink:hover{ color:var(--ink); border-color:var(--line); background:var(--paper-raised); }
+
+  .sheet{ padding-block:clamp(48px,8vw,88px); border-bottom:1px solid var(--line); position:relative; }
+  .sheet:last-of-type{ border-bottom:none; }
+  .sheet-tag{
+    display:flex; align-items:center; gap:10px;
+    font-family:'IBM Plex Mono',monospace; font-size:.72rem;
+    letter-spacing:.06em; color:var(--steel); text-transform:uppercase;
+    margin-bottom:20px;
+  }
+  .sheet-tag::before{
+    content:""; display:inline-block; width:9px; height:9px;
+    border:1.5px solid var(--steel); transform:rotate(45deg); flex:none;
+  }
+  .sheet-title{ font-size:clamp(1.7rem,4vw,2.5rem); margin-bottom:8px; }
+  .sheet-kicker{ color:var(--ink-soft); max-width:60ch; font-size:1rem; margin-bottom:0;}
+
+  .dim{ display:flex; align-items:center; gap:14px; margin:2.6rem 0; }
+  .dim-seg{ flex:1; height:1px; background:var(--line-strong); position:relative; }
+  .dim-seg:first-child::before{
+    content:""; position:absolute; left:0; top:-3px; width:1px; height:7px; background:var(--line-strong);
+  }
+  .dim-seg:last-child::after{
+    content:""; position:absolute; right:0; top:-3px; width:1px; height:7px; background:var(--line-strong);
+  }
+  .dim-label{
+    font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.05em;
+    color:var(--redline); white-space:nowrap; padding:0 2px;
+  }
+
+  .btn{
+    font-family:'IBM Plex Mono',monospace; font-size:.78rem; letter-spacing:.03em;
+    text-decoration:none; padding:12px 18px; border:1.5px solid var(--ink);
+    color:var(--ink); text-transform:uppercase; transition:transform .12s ease;
+    display:inline-block;
+  }
+  .btn:hover{ transform:translateY(-2px); }
+  .btn.primary{ background:var(--redline); border-color:var(--redline); color:#F4EFE6; }
+  .btn.primary:hover{ background:var(--ink); border-color:var(--ink); }
+
+  footer{ padding:26px 0 48px; text-align:center; }
+  footer p{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--ink-faint); margin:0; }
+
+  /* ============ DOCUMENT PAGE ADDITIONS ============ */
+  .crumbs{ font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.03em; color:var(--ink-faint); margin-bottom:26px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding-top:26px; }
+  .crumbs a{ color:var(--steel); text-decoration:none; }
+  .crumbs a:hover{ color:var(--ink); text-decoration:underline; }
+  .crumbs .sep{ color:var(--line-strong); }
+  .crumbs .here{ color:var(--ink-soft); }
+
+  .doc-head{ padding-bottom:6px; }
+  .doc-eyebrow{ font-family:'IBM Plex Mono',monospace; font-size:.76rem; letter-spacing:.08em; color:var(--redline); text-transform:uppercase; margin-bottom:16px; display:flex; align-items:center; gap:10px; }
+  .doc-eyebrow::before{ content:""; display:inline-block; width:9px; height:9px; border:1.5px solid var(--redline); transform:rotate(45deg); flex:none; }
+  .doc-title{ font-size:clamp(1.9rem,4.2vw,2.85rem); line-height:1.05; margin-bottom:16px; max-width:22ch; }
+  .doc-meta{ font-family:'IBM Plex Mono',monospace; font-size:.82rem; color:var(--steel); margin-bottom:22px; }
+  .doc-lede{ color:var(--ink-soft); max-width:68ch; font-size:1.04rem; margin-bottom:28px; }
+  .doc-cta{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:10px; }
+  .doc-filenote{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--ink-faint); }
+
+  .spec-strip{ display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--line); background:var(--paper-raised); margin:38px 0 6px; }
+  .spec-tile{ padding:18px 18px; border-left:1px solid var(--line); }
+  .spec-tile:first-child{ border-left:none; }
+  .spec-tile .sl{ font-family:'IBM Plex Mono',monospace; font-size:.62rem; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:8px; }
+  .spec-tile .sv{ font-family:'Big Shoulders Display',sans-serif; font-weight:700; font-size:1.32rem; color:var(--ink); line-height:1.15; }
+  .spec-tile .sv .unit{ font-size:.95rem; color:var(--steel); }
+  .spec-tile .sd{ font-family:'IBM Plex Mono',monospace; font-weight:400; font-size:.68rem; color:var(--ink-faint); margin-top:4px; }
+
+  .doc-prose{ margin-top:8px; }
+  .doc-prose h2{ font-size:1.42rem; margin:0 0 14px; }
+  .doc-prose p{ color:var(--ink-soft); margin:0 0 16px; max-width:70ch; font-size:1rem; line-height:1.72; }
+  .doc-prose p:last-child{ margin-bottom:0; }
+  .doc-section{ margin-bottom:40px; }
+  .doc-section:last-child{ margin-bottom:0; }
+
+  .exhibit{ margin:22px 0 26px; max-width:640px; }
+  .exhibit-frame{ background:#F4EFE6; border:1px solid var(--line-strong); padding:12px; }
+  .exhibit-frame img{ width:100%; display:block; }
+  .exhibit-cap{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--ink-faint); margin-top:10px; letter-spacing:.01em; line-height:1.5; }
+
+  .hero-exhibit{ margin:8px 0 40px; }
+  .hero-exhibit .exhibit-frame{ padding:16px; }
+  .hero-exhibit{ max-width:none; }
+
+  .datatable{ width:100%; border-collapse:collapse; margin:22px 0 26px; font-family:'IBM Plex Mono',monospace; font-size:.82rem; }
+  .datatable th, .datatable td{ border:1px solid var(--line); padding:10px 12px; text-align:left; }
+  .datatable th{ background:var(--paper-raised); color:var(--steel); font-weight:600; text-transform:uppercase; font-size:.68rem; letter-spacing:.04em; }
+  .datatable td.num{ font-variant-numeric:tabular-nums; }
+  .datatable tr.hl td{ color:var(--redline); }
+  .table-wrap{ overflow-x:auto; }
+
+  .companion{ margin-top:44px; background:var(--paper-raised); border:1px solid var(--line); padding:20px 22px; display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; }
+  .companion p{ margin:0; color:var(--ink-soft); font-size:.9rem; max-width:52ch; }
+  .companion a.btn{ flex:none; }
+
+  .pagenav{ display:flex; gap:1px; margin-top:56px; background:var(--line); border:1px solid var(--line); }
+  .pagenav a{ flex:1; background:var(--paper); font-family:'IBM Plex Mono',monospace; font-size:.74rem; color:var(--ink-soft); text-decoration:none; padding:16px 18px; }
+  .pagenav a:hover{ background:var(--paper-raised); color:var(--ink); }
+  .pagenav a.next{ text-align:right; }
+  .pagenav .lbl{ display:block; color:var(--ink-faint); font-size:.62rem; margin-bottom:6px; text-transform:uppercase; letter-spacing:.05em; }
+
+  /* ============ HUB PAGE ============ */
+  .hub-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--line); border:1px solid var(--line); margin-top:8px; }
+  .hub-card{ background:var(--paper); padding:0 0 24px; display:flex; flex-direction:column; text-decoration:none; color:inherit; }
+  .hub-card:hover{ background:var(--paper-raised); }
+  .hub-thumb{ aspect-ratio:16/10; overflow:hidden; border-bottom:1px solid var(--line); background:#F4EFE6; }
+  .hub-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .hub-body{ padding:20px 22px 0; display:flex; flex-direction:column; gap:9px; flex:1; }
+  .hub-num{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--ink-faint); letter-spacing:.04em; }
+  .hub-title{ font-family:'Big Shoulders Display',sans-serif; font-weight:700; font-size:1.14rem; text-transform:uppercase; line-height:1.12; }
+  .hub-meta{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--steel); }
+  .hub-desc{ color:var(--ink-soft); font-size:.87rem; line-height:1.55; flex:1; }
+  .hub-go{ font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--redline); letter-spacing:.03em; margin-top:6px; }
+  .hub-card:hover .hub-go{ text-decoration:underline; }
+
+  @media (max-width:760px){
+    .spec-strip{ grid-template-columns:repeat(2,1fr); }
+    .spec-tile:nth-child(3){ border-left:none; }
+    .spec-tile:nth-child(1), .spec-tile:nth-child(2){ border-bottom:1px solid var(--line); }
+    .hub-grid{ grid-template-columns:1fr; }
+    .pagenav{ flex-direction:column; }
+  }
+
+
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" style="text-decoration:none;color:inherit;"><div class="brand">MD. ASHRAFUZZAMAN <span class="b-sub">// CIVIL</span></div></a>
+    <nav class="sheetnav" aria-label="Sheet index">
+      <a class="navlink" href="../index.html#s03">&larr; PORTFOLIO</a>
+      <a class="navlink" href="index.html">DOCUMENTS INDEX</a>
+    </nav>
+  </div>
+</div>
+
+  <div class="wrap">
+    <div class="crumbs">
+      <a href="../index.html">PORTFOLIO</a><span class="sep">/</span>
+      <a href="index.html">DOCUMENTS</a><span class="sep">/</span>
+      <span class="here">SHEET S&#8209;03.2</span>
+    </div>
+  </div>
+
+<main class="wrap">
+  <section class="sheet doc-head" style="padding-top:6px;">
+    <div class="doc-eyebrow">Sheet S&#8209;03.2 &mdash; Full Record</div>
+    <h1 class="doc-title">CFD Scour Simulation of a Bridge Pier</h1>
+    <div class="doc-meta mono">FLOW&#8209;3D HYDRO &middot; Computational Fluid Dynamics, ISU &middot; Spring 2026</div>
+    <p class="doc-lede">Bridge pier scour has been linked to over 1,000 U.S. highway bridge failures since 1950. This project simulates the horseshoe&#8209;vortex mechanism that drives it in 3D CFD, then checks the result against a published laboratory benchmark rather than taking the simulation's word for it.</p>
+    <div class="doc-cta">
+      <a class="btn primary" href="files/cfd-scour-report.pdf" download>Download Full Report (PDF)</a>
+      <a class="btn" href="index.html">All Documents</a>
+    </div>
+    <div class="doc-filenote">PDF &middot; 2.0 MB</div>
+
+      <div class="spec-strip">
+        <div class="spec-tile">
+          <div class="sl">Velocity amplification</div>
+          <div class="sv num">1.52<span class="unit">&times;</span></div>
+          <div class="sd">vs. 1.3&#8211;1.6&times; in Roulund et al.</div>
+        </div>
+        <div class="spec-tile">
+          <div class="sl">Bed shear amplification</div>
+          <div class="sv num">&asymp;4.0<span class="unit">&times;</span></div>
+          <div class="sd">vs. 4&#8211;7&times; in Roulund et al.</div>
+        </div>
+        <div class="spec-tile">
+          <div class="sl">Scour depth &middot; HEC&#8209;18</div>
+          <div class="sv num">0.191<span class="unit">m</span></div>
+          <div class="sd">CSU empirical cross&#8209;check</div>
+        </div>
+        <div class="spec-tile">
+          <div class="sl">Fine mesh</div>
+          <div class="sv num">0.015<span class="unit">m</span></div>
+          <div class="sd">&asymp;200,000 cells, ~10 cells/pier diameter</div>
+        </div>
+      </div>
+
+      <div class="exhibit hero-exhibit">
+        <div class="exhibit-frame"><img src="img/cfd-hero.jpg" alt="Fig. Bridge&#8209;pier CFD domain &mdash; verification drawing generated from the FLOW&#8209;3D STL geometry: plan view, cross&#8209;sections, and 3D perspective of the half&#8209;domain channel and pier." loading="lazy"></div>
+        <div class="exhibit-cap"><b>Fig.</b> Bridge&#8209;pier CFD domain &mdash; verification drawing generated from the FLOW&#8209;3D STL geometry: plan view, cross&#8209;sections, and 3D perspective of the half&#8209;domain channel and pier.</div>
+      </div>
+
+    <div class="doc-prose">
+      <section class="doc-section">
+        <h2>Abstract</h2>
+        <p>Bridge pier scour — the erosion of streambed sediment around a bridge foundation by flowing water — is the leading documented cause of highway bridge failure in the United States, with the Federal Highway Administration linking it to over 1,000 bridge failures since 1950. This project used FLOW-3D HYDRO, a three-dimensional computational fluid dynamics (CFD) package, to simulate turbulent flow around a circular bridge pier and study the horseshoe-vortex mechanism that drives local scour, then validated those simulation results against a well-established published benchmark: Roulund, Sumer, Fredsøe & Michelsen (2005), Journal of Fluid Mechanics.</p>
+        <p>A half-domain open-channel model of a 0.15 m diameter circular pier under subcritical flow (Froude number 0.175) was built using the Volume of Fluid (TruVOF) method for the free surface and the RNG k-epsilon turbulence model as the baseline. A formal grid-convergence study across three mesh densities selected a fine mesh (0.015 m cells, ~200,000 cells) as the primary simulation. That simulation produced a velocity amplification of 1.52× at the pier flanks and a bed shear-stress amplification of about 4.0× — both landing inside the ranges Roulund et al. reported (1.3–1.6× and 4–7× respectively), which is the core validation result of the study. Two further variations were tested: swapping in the k-omega turbulence model, and activating a sediment-transport module. The HEC-18 CSU empirical equation, run independently as a cross-check, predicted an equilibrium scour depth of 0.191 m, and the sediment-transport simulation confirmed active erosion exactly where the horseshoe vortex analysis said it should occur — at the base of the pier flanks.</p>
+      </section>
+      <section class="doc-section">
+        <h2>Why this problem matters</h2>
+        <p>The horseshoe vortex forms when the turbulent boundary layer approaching a pier separates and rolls downward into a vortex that wraps around the pier base, amplifying local bed shear stress well beyond the undisturbed flow — enough to mobilize sediment that would otherwise stay put. As that material is carried away, a scour hole develops and deepens until the changing geometry brings local shear back down to the threshold for sediment motion, at which point the scour hole stabilizes. Left unaccounted for, that erosion can undermine a bridge foundation far below its design depth. Predicting where and how deep that scour will be — before it happens — is the whole point of both the empirical design equations engineers use today (like HEC-18) and the CFD approach this project tests as a complementary tool.</p>
+      </section>
+      <section class="doc-section">
+        <h2>Modeling approach</h2>
+        <p>The domain was a straight open channel containing a single circular pier, built as a half-domain model (mirrored at a symmetry plane) to cut computational cost without sacrificing accuracy, since the geometry and flow are symmetric about the pier centerline. Its dimensions were deliberately chosen to match Roulund et al.'s experimental setup — a water-depth-to-pier-diameter ratio of 2.0 — so the CFD results could be compared to their measurements on an apples-to-apples basis rather than approximately.</p>
+        <p>Three mesh resolutions (0.030 m coarse, 0.020 m medium, 0.015 m fine) were run with identical physics settings, isolating the effect of mesh density alone. The coarse mesh clearly over-predicted both velocity and shear stress due to poor resolution of the pier's curved surface; results were still shifting between the medium and fine meshes, so the fine mesh — with roughly ten cells spanning the pier diameter — was adopted as the primary configuration, balancing resolution against the computational cost of running an even finer grid.</p>
+        <p>With the fine mesh fixed, two further physics variations tested how sensitive the results are to modeling choices rather than mesh alone: substituting the k-omega turbulence model for the baseline RNG k-epsilon (since Roulund et al.'s own numerical work used k-omega, making this comparison directly relevant to the validation), and separately activating FLOW-3D's sediment-transport module (0.5 mm sand, Van Rijn bed-load transport, Soulsby-Whitehouse critical Shields parameter) to see whether the model's predicted erosion pattern actually lines up spatially with where the rigid-bed analysis said shear stress was highest.</p>
+      </section>
+      <section class="doc-section">
+        <h2>Results</h2>
+        <p>On the fine mesh, the approaching 0.30 m/s flow accelerated to 0.456 m/s at the pier flanks — a 1.52× amplification — with a clear low-velocity wake extending 5–8 pier-diameters downstream. Maximum bed shear stress reached 0.401 Pa at the same flank locations (the horseshoe-vortex footprint), an amplification of roughly 4.0× over the undisturbed bed. Both numbers fall within the ranges Roulund et al. reported from their combined laboratory and numerical study (1.3–1.6× for velocity, 4–7× for shear stress), which is the key validation result: the simulation is reproducing the correct physical mechanism, not just a plausible-looking flow field.</p>
+        <p>A vertical velocity profile extracted upstream of the pier showed the expected near-bed velocity deficit and near-surface acceleration, though its overall shape was more uniform through the mid-depth than Roulund et al.'s log-law-shaped profile — a difference attributed to the simulation's uniform-inflow boundary condition rather than to a fully developed turbulent boundary layer like Roulund's long recirculating flume produced. This is flagged directly as an acknowledged modeling limitation rather than glossed over, since it's a known consequence of the simplified inlet condition rather than a validation failure.</p>
+        <p>Swapping in the k-omega turbulence model raised the maximum bed shear stress by about 30% (0.522 Pa vs. 0.401 Pa) and pushed its shear-stress amplification factor to roughly 5.2× — landing more centrally in Roulund et al.'s reported range, consistent with the fact that Roulund's own numerical study used k-omega. That's a meaningful practical finding on its own: turbulence-model choice alone can shift a scour-relevant prediction by 30%, which matters when a CFD result is feeding into a design decision. The sediment-transport run confirmed active bed lowering at precisely the pier-flank locations identified as high-shear zones in the rigid-bed analysis, directly linking the horseshoe-vortex mechanism to observable erosion. Cross-checked against the HEC-18 CSU empirical equation's 0.191 m equilibrium scour-depth prediction, both CFD turbulence models produced maximum shear stresses exceeding the critical threshold for the sediment size used (about 0.38 Pa), confirming active scour potential under the simulated conditions — with the k-omega result giving the more conservative (higher) margin above that threshold.</p>
+      <div class="exhibit">
+        <div class="exhibit-frame"><img src="img/cfd-vectors.jpg" alt="Fig. Velocity magnitude and vectors around the pier, fine mesh (FLOW&#8209;3D HYDRO) &mdash; flank acceleration and the downstream wake are both visible in plan view." loading="lazy"></div>
+        <div class="exhibit-cap"><b>Fig.</b> Velocity magnitude and vectors around the pier, fine mesh (FLOW&#8209;3D HYDRO) &mdash; flank acceleration and the downstream wake are both visible in plan view.</div>
+      </div>
+      <div class="exhibit">
+        <div class="exhibit-frame"><img src="img/cfd-profile.jpg" alt="Fig. Upstream velocity profile vs. Roulund et al. (2005) &mdash; the present study (blue) against the digitized log&#8209;law profile (red)." loading="lazy"></div>
+        <div class="exhibit-cap"><b>Fig.</b> Upstream velocity profile vs. Roulund et al. (2005) &mdash; the present study (blue) against the digitized log&#8209;law profile (red).</div>
+      </div>
+      </section>
+      <section class="doc-section">
+        <h2>Conclusion</h2>
+        <p>The fine-mesh FLOW-3D HYDRO simulation reproduced the two scour-relevant metrics from the Roulund et al. (2005) benchmark — velocity amplification and bed shear-stress amplification — within their reported experimental ranges, which is the core validation this project set out to establish. The grid-convergence study demonstrated that mesh resolution matters enough to change conclusions, not just numbers, and the turbulence-model comparison showed the same is true of solver settings: k-omega and RNG k-epsilon disagreed by 30% on a metric directly tied to scour risk. Combining the CFD analysis with the classical HEC-18 empirical method proved more informative than either alone — HEC-18 supplies the equilibrium scour depth a designer actually needs, while the CFD analysis explains and confirms the spatial mechanism (the horseshoe vortex) driving that erosion, including where on the pier it will be worst.</p>
+      </section>
+    </div>
+
+
+
+    <div class="pagenav">
+      <a class="prev" href="thesis.html"><span class="lbl">&larr; Previous</span>B.Sc. Thesis: PLAXIS 3D Pile Load Tests</a>
+      <a class="next" href="ansys-pile.html"><span class="lbl">Next &rarr;</span>Axial Pile Load&#8211;Settlement FE in ANSYS</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p class="mono">Drawing set maintained by Md. Ashrafuzzaman &middot; last revised 2026 &middot; <a href="../index.html" style="color:inherit;">back to portfolio</a></p>
+</footer>
+</body>
+</html>

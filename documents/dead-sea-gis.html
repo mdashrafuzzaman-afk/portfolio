@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GIS Shoreline Change, Dead Sea 1984&#8211;2021 — Md. Ashrafuzzaman</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;600;700;800&family=Big+Shoulders+Stencil+Display:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  /* ============ TOKENS ============ */
+  :root{
+    --paper:#1F3850;
+    --paper-raised:#28455F;
+    --paper-sunken:#17293A;
+    --ink:#ECE9E0;
+    --ink-soft:#AEB9C2;
+    --ink-faint:#7C8A96;
+    --line:#33506B;
+    --line-strong:#4A6883;
+    --steel:#9FC4D6;
+    --soil:#CDA05F;
+    --soil-fill:#5C3F22;
+    --soil-fill-2:#4A4A3C;
+    --redline:#E1602E;
+    --redline-soft:rgba(225,96,46,.18);
+    --shadow:rgba(0,0,0,.45);
+    --focus:#63B79E;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--redline-soft); color:var(--ink); }
+  a{ color:inherit; }
+  a:focus-visible, button:focus-visible, .navlink:focus-visible{
+    outline:2px solid var(--focus);
+    outline-offset:3px;
+    border-radius:2px;
+  }
+  h1,h2,h3{
+    font-family:'Big Shoulders Display',system-ui,sans-serif;
+    font-weight:700;
+    text-transform:uppercase;
+    text-wrap:balance;
+    margin:0;
+    letter-spacing:.01em;
+  }
+  .mono{ font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace; }
+  .num{ font-variant-numeric:tabular-nums; }
+  @media (prefers-reduced-motion:reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
+  }
+
+  .wrap{ max-width:1080px; margin:0 auto; padding-inline:clamp(20px,4vw,48px); }
+
+  .topbar{
+    position:sticky; top:0; z-index:40;
+    background:var(--paper);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar-inner{
+    max-width:1080px; margin:0 auto; padding:clamp(20px,4vw,48px);
+    padding-top:14px; padding-bottom:14px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px; flex-wrap:wrap;
+  }
+  .brand{
+    font-family:'Big Shoulders Display',sans-serif;
+    font-weight:700; font-size:1.05rem; text-transform:uppercase;
+    letter-spacing:.04em;
+    display:flex; align-items:baseline; gap:.5em;
+  }
+  .brand .b-sub{ font-family:'IBM Plex Mono',monospace; font-size:.6rem; color:var(--ink-faint); text-transform:none; letter-spacing:.02em; }
+  .sheetnav{ display:flex; gap:2px; flex-wrap:wrap; }
+  .navlink{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.68rem; letter-spacing:.03em;
+    text-decoration:none; color:var(--ink-soft);
+    padding:6px 10px; border:1px solid transparent; border-radius:2px;
+    white-space:nowrap;
+  }
+  .navlink:hover{ color:var(--ink); border-color:var(--line); background:var(--paper-raised); }
+
+  .sheet{ padding-block:clamp(48px,8vw,88px); border-bottom:1px solid var(--line); position:relative; }
+  .sheet:last-of-type{ border-bottom:none; }
+  .sheet-tag{
+    display:flex; align-items:center; gap:10px;
+    font-family:'IBM Plex Mono',monospace; font-size:.72rem;
+    letter-spacing:.06em; color:var(--steel); text-transform:uppercase;
+    margin-bottom:20px;
+  }
+  .sheet-tag::before{
+    content:""; display:inline-block; width:9px; height:9px;
+    border:1.5px solid var(--steel); transform:rotate(45deg); flex:none;
+  }
+  .sheet-title{ font-size:clamp(1.7rem,4vw,2.5rem); margin-bottom:8px; }
+  .sheet-kicker{ color:var(--ink-soft); max-width:60ch; font-size:1rem; margin-bottom:0;}
+
+  .dim{ display:flex; align-items:center; gap:14px; margin:2.6rem 0; }
+  .dim-seg{ flex:1; height:1px; background:var(--line-strong); position:relative; }
+  .dim-seg:first-child::before{
+    content:""; position:absolute; left:0; top:-3px; width:1px; height:7px; background:var(--line-strong);
+  }
+  .dim-seg:last-child::after{
+    content:""; position:absolute; right:0; top:-3px; width:1px; height:7px; background:var(--line-strong);
+  }
+  .dim-label{
+    font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.05em;
+    color:var(--redline); white-space:nowrap; padding:0 2px;
+  }
+
+  .btn{
+    font-family:'IBM Plex Mono',monospace; font-size:.78rem; letter-spacing:.03em;
+    text-decoration:none; padding:12px 18px; border:1.5px solid var(--ink);
+    color:var(--ink); text-transform:uppercase; transition:transform .12s ease;
+    display:inline-block;
+  }
+  .btn:hover{ transform:translateY(-2px); }
+  .btn.primary{ background:var(--redline); border-color:var(--redline); color:#F4EFE6; }
+  .btn.primary:hover{ background:var(--ink); border-color:var(--ink); }
+
+  footer{ padding:26px 0 48px; text-align:center; }
+  footer p{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--ink-faint); margin:0; }
+
+  /* ============ DOCUMENT PAGE ADDITIONS ============ */
+  .crumbs{ font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.03em; color:var(--ink-faint); margin-bottom:26px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding-top:26px; }
+  .crumbs a{ color:var(--steel); text-decoration:none; }
+  .crumbs a:hover{ color:var(--ink); text-decoration:underline; }
+  .crumbs .sep{ color:var(--line-strong); }
+  .crumbs .here{ color:var(--ink-soft); }
+
+  .doc-head{ padding-bottom:6px; }
+  .doc-eyebrow{ font-family:'IBM Plex Mono',monospace; font-size:.76rem; letter-spacing:.08em; color:var(--redline); text-transform:uppercase; margin-bottom:16px; display:flex; align-items:center; gap:10px; }
+  .doc-eyebrow::before{ content:""; display:inline-block; width:9px; height:9px; border:1.5px solid var(--redline); transform:rotate(45deg); flex:none; }
+  .doc-title{ font-size:clamp(1.9rem,4.2vw,2.85rem); line-height:1.05; margin-bottom:16px; max-width:22ch; }
+  .doc-meta{ font-family:'IBM Plex Mono',monospace; font-size:.82rem; color:var(--steel); margin-bottom:22px; }
+  .doc-lede{ color:var(--ink-soft); max-width:68ch; font-size:1.04rem; margin-bottom:28px; }
+  .doc-cta{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:10px; }
+  .doc-filenote{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--ink-faint); }
+
+  .spec-strip{ display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--line); background:var(--paper-raised); margin:38px 0 6px; }
+  .spec-tile{ padding:18px 18px; border-left:1px solid var(--line); }
+  .spec-tile:first-child{ border-left:none; }
+  .spec-tile .sl{ font-family:'IBM Plex Mono',monospace; font-size:.62rem; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:8px; }
+  .spec-tile .sv{ font-family:'Big Shoulders Display',sans-serif; font-weight:700; font-size:1.32rem; color:var(--ink); line-height:1.15; }
+  .spec-tile .sv .unit{ font-size:.95rem; color:var(--steel); }
+  .spec-tile .sd{ font-family:'IBM Plex Mono',monospace; font-weight:400; font-size:.68rem; color:var(--ink-faint); margin-top:4px; }
+
+  .doc-prose{ margin-top:8px; }
+  .doc-prose h2{ font-size:1.42rem; margin:0 0 14px; }
+  .doc-prose p{ color:var(--ink-soft); margin:0 0 16px; max-width:70ch; font-size:1rem; line-height:1.72; }
+  .doc-prose p:last-child{ margin-bottom:0; }
+  .doc-section{ margin-bottom:40px; }
+  .doc-section:last-child{ margin-bottom:0; }
+
+  .exhibit{ margin:22px 0 26px; max-width:640px; }
+  .exhibit-frame{ background:#F4EFE6; border:1px solid var(--line-strong); padding:12px; }
+  .exhibit-frame img{ width:100%; display:block; }
+  .exhibit-cap{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--ink-faint); margin-top:10px; letter-spacing:.01em; line-height:1.5; }
+
+  .hero-exhibit{ margin:8px 0 40px; }
+  .hero-exhibit .exhibit-frame{ padding:16px; }
+  .hero-exhibit{ max-width:none; }
+
+  .datatable{ width:100%; border-collapse:collapse; margin:22px 0 26px; font-family:'IBM Plex Mono',monospace; font-size:.82rem; }
+  .datatable th, .datatable td{ border:1px solid var(--line); padding:10px 12px; text-align:left; }
+  .datatable th{ background:var(--paper-raised); color:var(--steel); font-weight:600; text-transform:uppercase; font-size:.68rem; letter-spacing:.04em; }
+  .datatable td.num{ font-variant-numeric:tabular-nums; }
+  .datatable tr.hl td{ color:var(--redline); }
+  .table-wrap{ overflow-x:auto; }
+
+  .companion{ margin-top:44px; background:var(--paper-raised); border:1px solid var(--line); padding:20px 22px; display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; }
+  .companion p{ margin:0; color:var(--ink-soft); font-size:.9rem; max-width:52ch; }
+  .companion a.btn{ flex:none; }
+
+  .pagenav{ display:flex; gap:1px; margin-top:56px; background:var(--line); border:1px solid var(--line); }
+  .pagenav a{ flex:1; background:var(--paper); font-family:'IBM Plex Mono',monospace; font-size:.74rem; color:var(--ink-soft); text-decoration:none; padding:16px 18px; }
+  .pagenav a:hover{ background:var(--paper-raised); color:var(--ink); }
+  .pagenav a.next{ text-align:right; }
+  .pagenav .lbl{ display:block; color:var(--ink-faint); font-size:.62rem; margin-bottom:6px; text-transform:uppercase; letter-spacing:.05em; }
+
+  /* ============ HUB PAGE ============ */
+  .hub-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--line); border:1px solid var(--line); margin-top:8px; }
+  .hub-card{ background:var(--paper); padding:0 0 24px; display:flex; flex-direction:column; text-decoration:none; color:inherit; }
+  .hub-card:hover{ background:var(--paper-raised); }
+  .hub-thumb{ aspect-ratio:16/10; overflow:hidden; border-bottom:1px solid var(--line); background:#F4EFE6; }
+  .hub-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .hub-body{ padding:20px 22px 0; display:flex; flex-direction:column; gap:9px; flex:1; }
+  .hub-num{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--ink-faint); letter-spacing:.04em; }
+  .hub-title{ font-family:'Big Shoulders Display',sans-serif; font-weight:700; font-size:1.14rem; text-transform:uppercase; line-height:1.12; }
+  .hub-meta{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--steel); }
+  .hub-desc{ color:var(--ink-soft); font-size:.87rem; line-height:1.55; flex:1; }
+  .hub-go{ font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--redline); letter-spacing:.03em; margin-top:6px; }
+  .hub-card:hover .hub-go{ text-decoration:underline; }
+
+  @media (max-width:760px){
+    .spec-strip{ grid-template-columns:repeat(2,1fr); }
+    .spec-tile:nth-child(3){ border-left:none; }
+    .spec-tile:nth-child(1), .spec-tile:nth-child(2){ border-bottom:1px solid var(--line); }
+    .hub-grid{ grid-template-columns:1fr; }
+    .pagenav{ flex-direction:column; }
+  }
+
+
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" style="text-decoration:none;color:inherit;"><div class="brand">MD. ASHRAFUZZAMAN <span class="b-sub">// CIVIL</span></div></a>
+    <nav class="sheetnav" aria-label="Sheet index">
+      <a class="navlink" href="../index.html#s03">&larr; PORTFOLIO</a>
+      <a class="navlink" href="index.html">DOCUMENTS INDEX</a>
+    </nav>
+  </div>
+</div>
+
+  <div class="wrap">
+    <div class="crumbs">
+      <a href="../index.html">PORTFOLIO</a><span class="sep">/</span>
+      <a href="index.html">DOCUMENTS</a><span class="sep">/</span>
+      <span class="here">SHEET S&#8209;03.4</span>
+    </div>
+  </div>
+
+<main class="wrap">
+  <section class="sheet doc-head" style="padding-top:6px;">
+    <div class="doc-eyebrow">Sheet S&#8209;03.4 &mdash; Full Record</div>
+    <h1 class="doc-title">GIS Shoreline Change, Dead Sea 1984&#8211;2021</h1>
+    <div class="doc-meta mono">Advanced GIS &amp; Spatial Analysis, ISU &middot; Spring 2026</div>
+    <p class="doc-lede">The Dead Sea's decline is well documented in the literature, but this project measures it independently &mdash; pulling raw satellite water&#8209;classification rasters for six benchmark years and quantifying the loss in ArcGIS Pro, rather than citing someone else's number.</p>
+    <div class="doc-cta">
+      <a class="btn primary" href="files/dead-sea-gis-report.pdf" download>Download Full Report (PDF)</a>
+      <a class="btn" href="index.html">All Documents</a>
+    </div>
+    <div class="doc-filenote">PDF &middot; 580 KB</div>
+
+      <div class="spec-strip">
+        <div class="spec-tile">
+          <div class="sl">Surface area &middot; 1984</div>
+          <div class="sv num">881.5<span class="unit">km&sup2;</span></div>
+          <div class="sd">study baseline year</div>
+        </div>
+        <div class="spec-tile">
+          <div class="sl">Surface area &middot; 2021</div>
+          <div class="sv num">861.4<span class="unit">km&sup2;</span></div>
+          <div class="sd">most recent study year</div>
+        </div>
+        <div class="spec-tile">
+          <div class="sl">Net change</div>
+          <div class="sv num">&minus;20.1<span class="unit">km&sup2;</span></div>
+          <div class="sd">&minus;2.3% of the 1984 baseline</div>
+        </div>
+        <div class="spec-tile">
+          <div class="sl">Peak extent</div>
+          <div class="sv num">921.3<span class="unit">km&sup2;</span></div>
+          <div class="sd">1998, before the decline resumed</div>
+        </div>
+      </div>
+
+      <div class="exhibit hero-exhibit">
+        <div class="exhibit-frame"><img src="img/deadsea-hero.jpg" alt="Fig. Dead Sea shoreline extent, 1984&#8211;2021 &mdash; six study years overlaid from JRC Global Surface Water rasters, classified and measured in ArcGIS Pro." loading="lazy"></div>
+        <div class="exhibit-cap"><b>Fig.</b> Dead Sea shoreline extent, 1984&#8211;2021 &mdash; six study years overlaid from JRC Global Surface Water rasters, classified and measured in ArcGIS Pro.</div>
+      </div>
+
+    <div class="doc-prose">
+      <section class="doc-section">
+        <h2>Abstract</h2>
+        <p>The Dead Sea, on the border of Israel and Jordan, is the lowest point on Earth's surface and one of the most extensively documented cases of terminal lake recession anywhere in the world — its water loss, driven mainly by reduced Jordan River inflow and large-scale industrial potash extraction, is well established in the hydrology literature. This project used free, publicly available satellite remote-sensing data and GIS spatial-analysis tools to independently measure that recession, quantifying how much surface area the Dead Sea has actually lost between 1984 and 2021, and where that loss has been concentrated.</p>
+        <p>Monthly water-classification rasters from the JRC Global Surface Water dataset (European Commission Joint Research Centre, derived from Landsat imagery at 30 m resolution) were pulled for six benchmark years — 1984, 1990, 1998, 2000, 2015, and 2021 — via Google Earth Engine, then converted to vector polygons and measured geodesically in ArcGIS Pro. The result: total surface area declined from 881.5 km² in 1984 to 861.4 km², a net loss of 20.1 km² (about 2.3% of the 1984 baseline) — but the path there wasn't a steady decline. Area actually increased through the 1990s, peaking at 921.3 km² in 1998, before reversing into a sustained decline from 1998 onward. The steepest, most visible losses are concentrated in the southern basin, where industrial evaporation ponds have replaced large stretches of what used to be open water.</p>
+      </section>
+      <section class="doc-section">
+        <h2>Why this matters</h2>
+        <p>The Dead Sea's shrinkage isn't just a striking visual — it's an active regional policy problem. Its continued decline factors directly into ongoing negotiations between Israel, Jordan, and the Palestinian Authority over water-sharing agreements and the proposed Red Sea–Dead Sea water conveyance project, intended to help stabilize water levels. Any of that policy work depends on having a reliable, quantitative record of how much the lake has actually shrunk and where — which is exactly the kind of measurement problem GIS and remote sensing are well suited to solve at a regional, multi-decade scale that ground surveys alone can't easily match.</p>
+      <div class="exhibit">
+        <div class="exhibit-frame"><img src="img/deadsea-location.jpg" alt="Fig. Study area &mdash; the Dead Sea, on the border of Israel and Jordan." loading="lazy"></div>
+        <div class="exhibit-cap"><b>Fig.</b> Study area &mdash; the Dead Sea, on the border of Israel and Jordan.</div>
+      </div>
+      </section>
+      <section class="doc-section">
+        <h2>Method</h2>
+        <p>Rather than relying on secondary reports of Dead Sea shrinkage, this project built an independent measurement from raw satellite data. The JRC Global Surface Water Monthly History dataset was queried through Google Earth Engine for six study years spanning the full 37-year record, using each year's August image specifically to minimize seasonal water-level variability and cloud interference — a choice grounded in established best practice for monitoring arid-region water bodies. For each year, pixels meeting the water classification threshold were extracted and exported as a GeoTIFF raster at 30 m resolution, covering a bounding box of roughly 35.2–35.8°E, 30.5–31.9°N.</p>
+        <p>All six annual rasters were brought into a single ArcGIS Pro file geodatabase and converted to polygon feature classes using the Raster to Polygon tool. A geodesic area field was then calculated on each polygon layer to get the true surface area in square kilometers (rather than a simplified planar approximation, which would introduce error over an area this size), summing only the polygons actually classified as water to get each year's total. The six years' shoreline polygons were then layered together in a single cartographic output, styled by year, with a basemap, scale bar, north arrow, and coordinate graticule added to standard mapping conventions — turning six separate area numbers into a single map that shows exactly where the shoreline has moved over nearly four decades.</p>
+      </section>
+      <section class="doc-section">
+        <h2>Results</h2>
+        <p>The Dead Sea's surface area measured 881.5 km² in 1984, the study's baseline year. Rather than declining steadily from there, it actually grew through the 1990s — reaching a peak of 921.3 km² in 1998, a gain of nearly 40 km² likely reflecting inter-annual variability in precipitation and Jordan River inflow during that period rather than a genuine reversal of the long-term trend. From 1998 on, the trend reversed decisively: area fell to 880.9 km² by 2015 (back below the 1984 baseline) and to 861.4 km² by 2021. Net change over the full 37-year record: a loss of 20.1 km², or about 2.3% of the 1984 starting area.</p>
+        <p>The spatial pattern is at least as informative as the area numbers themselves. Overlaying all six years' shorelines shows the southern basin has undergone by far the most dramatic transformation — much of what was open water in 1984 has been replaced by industrial evaporation ponds, consistent with independent research documenting the same conversion. The northern basin's retreat is more modest and concentrated along its eastern and southern margins, but the 2021 shoreline is visibly smaller than 1984's across both basins when the six years are compared directly on the map.</p>
+      <div class="exhibit">
+        <div class="exhibit-frame"><img src="img/deadsea-charts.jpg" alt="Fig. Surface area by study year and trend over time &mdash; the 1998 peak and the sustained decline that followed it are both visible." loading="lazy"></div>
+        <div class="exhibit-cap"><b>Fig.</b> Surface area by study year and trend over time &mdash; the 1998 peak and the sustained decline that followed it are both visible.</div>
+      </div>
+      </section>
+      <section class="doc-section">
+        <h2>Conclusion</h2>
+        <p>Measuring the Dead Sea's recession independently from raw satellite imagery, rather than citing others' figures, produced results that line up closely with the existing literature on Dead Sea hydrology (Gavrieli et al., 2005; Salameh et al., 2019) — both in the overall magnitude of loss and in identifying the southern basin as the epicenter of change. That agreement is itself a useful validation: it shows that freely available datasets (JRC Global Surface Water) and standard GIS tools (ArcGIS Pro) are enough to independently reproduce a documented environmental trend at a regional, multi-decade scale, without needing specialized or proprietary data sources.</p>
+        <p>A couple of limitations are worth being upfront about: using a single August image per year captures a snapshot rather than the full seasonal range of water extent, and the Dead Sea's unusual hypersaline chemistry can affect how accurately standard water-classification algorithms detect its surface compared to freshwater bodies. Both are solvable in future work — multi-temporal composites instead of single monthly images, and spectral indices calibrated specifically for saline water — but neither undermines the core finding here: a real, accelerating, spatially concentrated loss of surface area that the data speaks to directly.</p>
+      </section>
+    </div>
+
+
+
+    <div class="pagenav">
+      <a class="prev" href="ansys-pile.html"><span class="lbl">&larr; Previous</span>Axial Pile Load&#8211;Settlement FE in ANSYS</a>
+      <a class="next" href="index.html"><span class="lbl">Next &rarr;</span>Documents Index</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p class="mono">Drawing set maintained by Md. Ashrafuzzaman &middot; last revised 2026 &middot; <a href="../index.html" style="color:inherit;">back to portfolio</a></p>
+</footer>
+</body>
+</html>

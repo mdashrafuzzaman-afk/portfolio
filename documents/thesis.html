@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>B.Sc. Thesis: Pile Static Load Tests in PLAXIS&nbsp;3D — Md. Ashrafuzzaman</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;600;700;800&family=Big+Shoulders+Stencil+Display:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  /* ============ TOKENS ============ */
+  :root{
+    --paper:#1F3850;
+    --paper-raised:#28455F;
+    --paper-sunken:#17293A;
+    --ink:#ECE9E0;
+    --ink-soft:#AEB9C2;
+    --ink-faint:#7C8A96;
+    --line:#33506B;
+    --line-strong:#4A6883;
+    --steel:#9FC4D6;
+    --soil:#CDA05F;
+    --soil-fill:#5C3F22;
+    --soil-fill-2:#4A4A3C;
+    --redline:#E1602E;
+    --redline-soft:rgba(225,96,46,.18);
+    --shadow:rgba(0,0,0,.45);
+    --focus:#63B79E;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--redline-soft); color:var(--ink); }
+  a{ color:inherit; }
+  a:focus-visible, button:focus-visible, .navlink:focus-visible{
+    outline:2px solid var(--focus);
+    outline-offset:3px;
+    border-radius:2px;
+  }
+  h1,h2,h3{
+    font-family:'Big Shoulders Display',system-ui,sans-serif;
+    font-weight:700;
+    text-transform:uppercase;
+    text-wrap:balance;
+    margin:0;
+    letter-spacing:.01em;
+  }
+  .mono{ font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace; }
+  .num{ font-variant-numeric:tabular-nums; }
+  @media (prefers-reduced-motion:reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
+  }
+
+  .wrap{ max-width:1080px; margin:0 auto; padding-inline:clamp(20px,4vw,48px); }
+
+  .topbar{
+    position:sticky; top:0; z-index:40;
+    background:var(--paper);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar-inner{
+    max-width:1080px; margin:0 auto; padding:clamp(20px,4vw,48px);
+    padding-top:14px; padding-bottom:14px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px; flex-wrap:wrap;
+  }
+  .brand{
+    font-family:'Big Shoulders Display',sans-serif;
+    font-weight:700; font-size:1.05rem; text-transform:uppercase;
+    letter-spacing:.04em;
+    display:flex; align-items:baseline; gap:.5em;
+  }
+  .brand .b-sub{ font-family:'IBM Plex Mono',monospace; font-size:.6rem; color:var(--ink-faint); text-transform:none; letter-spacing:.02em; }
+  .sheetnav{ display:flex; gap:2px; flex-wrap:wrap; }
+  .navlink{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.68rem; letter-spacing:.03em;
+    text-decoration:none; color:var(--ink-soft);
+    padding:6px 10px; border:1px solid transparent; border-radius:2px;
+    white-space:nowrap;
+  }
+  .navlink:hover{ color:var(--ink); border-color:var(--line); background:var(--paper-raised); }
+
+  .sheet{ padding-block:clamp(48px,8vw,88px); border-bottom:1px solid var(--line); position:relative; }
+  .sheet:last-of-type{ border-bottom:none; }
+  .sheet-tag{
+    display:flex; align-items:center; gap:10px;
+    font-family:'IBM Plex Mono',monospace; font-size:.72rem;
+    letter-spacing:.06em; color:var(--steel); text-transform:uppercase;
+    margin-bottom:20px;
+  }
+  .sheet-tag::before{
+    content:""; display:inline-block; width:9px; height:9px;
+    border:1.5px solid var(--steel); transform:rotate(45deg); flex:none;
+  }
+  .sheet-title{ font-size:clamp(1.7rem,4vw,2.5rem); margin-bottom:8px; }
+  .sheet-kicker{ color:var(--ink-soft); max-width:60ch; font-size:1rem; margin-bottom:0;}
+
+  .dim{ display:flex; align-items:center; gap:14px; margin:2.6rem 0; }
+  .dim-seg{ flex:1; height:1px; background:var(--line-strong); position:relative; }
+  .dim-seg:first-child::before{
+    content:""; position:absolute; left:0; top:-3px; width:1px; height:7px; background:var(--line-strong);
+  }
+  .dim-seg:last-child::after{
+    content:""; position:absolute; right:0; top:-3px; width:1px; height:7px; background:var(--line-strong);
+  }
+  .dim-label{
+    font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.05em;
+    color:var(--redline); white-space:nowrap; padding:0 2px;
+  }
+
+  .btn{
+    font-family:'IBM Plex Mono',monospace; font-size:.78rem; letter-spacing:.03em;
+    text-decoration:none; padding:12px 18px; border:1.5px solid var(--ink);
+    color:var(--ink); text-transform:uppercase; transition:transform .12s ease;
+    display:inline-block;
+  }
+  .btn:hover{ transform:translateY(-2px); }
+  .btn.primary{ background:var(--redline); border-color:var(--redline); color:#F4EFE6; }
+  .btn.primary:hover{ background:var(--ink); border-color:var(--ink); }
+
+  footer{ padding:26px 0 48px; text-align:center; }
+  footer p{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--ink-faint); margin:0; }
+
+  /* ============ DOCUMENT PAGE ADDITIONS ============ */
+  .crumbs{ font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.03em; color:var(--ink-faint); margin-bottom:26px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding-top:26px; }
+  .crumbs a{ color:var(--steel); text-decoration:none; }
+  .crumbs a:hover{ color:var(--ink); text-decoration:underline; }
+  .crumbs .sep{ color:var(--line-strong); }
+  .crumbs .here{ color:var(--ink-soft); }
+
+  .doc-head{ padding-bottom:6px; }
+  .doc-eyebrow{ font-family:'IBM Plex Mono',monospace; font-size:.76rem; letter-spacing:.08em; color:var(--redline); text-transform:uppercase; margin-bottom:16px; display:flex; align-items:center; gap:10px; }
+  .doc-eyebrow::before{ content:""; display:inline-block; width:9px; height:9px; border:1.5px solid var(--redline); transform:rotate(45deg); flex:none; }
+  .doc-title{ font-size:clamp(1.9rem,4.2vw,2.85rem); line-height:1.05; margin-bottom:16px; max-width:22ch; }
+  .doc-meta{ font-family:'IBM Plex Mono',monospace; font-size:.82rem; color:var(--steel); margin-bottom:22px; }
+  .doc-lede{ color:var(--ink-soft); max-width:68ch; font-size:1.04rem; margin-bottom:28px; }
+  .doc-cta{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:10px; }
+  .doc-filenote{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--ink-faint); }
+
+  .spec-strip{ display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--line); background:var(--paper-raised); margin:38px 0 6px; }
+  .spec-tile{ padding:18px 18px; border-left:1px solid var(--line); }
+  .spec-tile:first-child{ border-left:none; }
+  .spec-tile .sl{ font-family:'IBM Plex Mono',monospace; font-size:.62rem; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:8px; }
+  .spec-tile .sv{ font-family:'Big Shoulders Display',sans-serif; font-weight:700; font-size:1.32rem; color:var(--ink); line-height:1.15; }
+  .spec-tile .sv .unit{ font-size:.95rem; color:var(--steel); }
+  .spec-tile .sd{ font-family:'IBM Plex Mono',monospace; font-weight:400; font-size:.68rem; color:var(--ink-faint); margin-top:4px; }
+
+  .doc-prose{ margin-top:8px; }
+  .doc-prose h2{ font-size:1.42rem; margin:0 0 14px; }
+  .doc-prose p{ color:var(--ink-soft); margin:0 0 16px; max-width:70ch; font-size:1rem; line-height:1.72; }
+  .doc-prose p:last-child{ margin-bottom:0; }
+  .doc-section{ margin-bottom:40px; }
+  .doc-section:last-child{ margin-bottom:0; }
+
+  .exhibit{ margin:22px 0 26px; max-width:640px; }
+  .exhibit-frame{ background:#F4EFE6; border:1px solid var(--line-strong); padding:12px; }
+  .exhibit-frame img{ width:100%; display:block; }
+  .exhibit-cap{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--ink-faint); margin-top:10px; letter-spacing:.01em; line-height:1.5; }
+
+  .hero-exhibit{ margin:8px 0 40px; }
+  .hero-exhibit .exhibit-frame{ padding:16px; }
+  .hero-exhibit{ max-width:none; }
+
+  .datatable{ width:100%; border-collapse:collapse; margin:22px 0 26px; font-family:'IBM Plex Mono',monospace; font-size:.82rem; }
+  .datatable th, .datatable td{ border:1px solid var(--line); padding:10px 12px; text-align:left; }
+  .datatable th{ background:var(--paper-raised); color:var(--steel); font-weight:600; text-transform:uppercase; font-size:.68rem; letter-spacing:.04em; }
+  .datatable td.num{ font-variant-numeric:tabular-nums; }
+  .datatable tr.hl td{ color:var(--redline); }
+  .table-wrap{ overflow-x:auto; }
+
+  .companion{ margin-top:44px; background:var(--paper-raised); border:1px solid var(--line); padding:20px 22px; display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; }
+  .companion p{ margin:0; color:var(--ink-soft); font-size:.9rem; max-width:52ch; }
+  .companion a.btn{ flex:none; }
+
+  .pagenav{ display:flex; gap:1px; margin-top:56px; background:var(--line); border:1px solid var(--line); }
+  .pagenav a{ flex:1; background:var(--paper); font-family:'IBM Plex Mono',monospace; font-size:.74rem; color:var(--ink-soft); text-decoration:none; padding:16px 18px; }
+  .pagenav a:hover{ background:var(--paper-raised); color:var(--ink); }
+  .pagenav a.next{ text-align:right; }
+  .pagenav .lbl{ display:block; color:var(--ink-faint); font-size:.62rem; margin-bottom:6px; text-transform:uppercase; letter-spacing:.05em; }
+
+  /* ============ HUB PAGE ============ */
+  .hub-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--line); border:1px solid var(--line); margin-top:8px; }
+  .hub-card{ background:var(--paper); padding:0 0 24px; display:flex; flex-direction:column; text-decoration:none; color:inherit; }
+  .hub-card:hover{ background:var(--paper-raised); }
+  .hub-thumb{ aspect-ratio:16/10; overflow:hidden; border-bottom:1px solid var(--line); background:#F4EFE6; }
+  .hub-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .hub-body{ padding:20px 22px 0; display:flex; flex-direction:column; gap:9px; flex:1; }
+  .hub-num{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--ink-faint); letter-spacing:.04em; }
+  .hub-title{ font-family:'Big Shoulders Display',sans-serif; font-weight:700; font-size:1.14rem; text-transform:uppercase; line-height:1.12; }
+  .hub-meta{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--steel); }
+  .hub-desc{ color:var(--ink-soft); font-size:.87rem; line-height:1.55; flex:1; }
+  .hub-go{ font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--redline); letter-spacing:.03em; margin-top:6px; }
+  .hub-card:hover .hub-go{ text-decoration:underline; }
+
+  @media (max-width:760px){
+    .spec-strip{ grid-template-columns:repeat(2,1fr); }
+    .spec-tile:nth-child(3){ border-left:none; }
+    .spec-tile:nth-child(1), .spec-tile:nth-child(2){ border-bottom:1px solid var(--line); }
+    .hub-grid{ grid-template-columns:1fr; }
+    .pagenav{ flex-direction:column; }
+  }
+
+
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" style="text-decoration:none;color:inherit;"><div class="brand">MD. ASHRAFUZZAMAN <span class="b-sub">// CIVIL</span></div></a>
+    <nav class="sheetnav" aria-label="Sheet index">
+      <a class="navlink" href="../index.html#s03">&larr; PORTFOLIO</a>
+      <a class="navlink" href="index.html">DOCUMENTS INDEX</a>
+    </nav>
+  </div>
+</div>
+
+  <div class="wrap">
+    <div class="crumbs">
+      <a href="../index.html">PORTFOLIO</a><span class="sep">/</span>
+      <a href="index.html">DOCUMENTS</a><span class="sep">/</span>
+      <span class="here">SHEET S&#8209;03.1</span>
+    </div>
+  </div>
+
+<main class="wrap">
+  <section class="sheet doc-head" style="padding-top:6px;">
+    <div class="doc-eyebrow">Sheet S&#8209;03.1 &mdash; Full Record</div>
+    <h1 class="doc-title">B.Sc. Thesis: Pile Static Load Tests in PLAXIS&nbsp;3D</h1>
+    <div class="doc-meta mono">BUET, Dept. of Civil Engineering &middot; 2023&#8211;2024 &middot; B.Sc. Thesis</div>
+    <p class="doc-lede">Can a finite-element model, once benchmarked against one real static load test, be trusted to stand in for the next one? This thesis builds a PLAXIS 3D model of an actual test pile in Dhaka, Bangladesh, and checks its predicted capacity against what the field test measured.</p>
+    <div class="doc-cta">
+      <a class="btn primary" href="files/thesis.pdf" download>Download Full Report (PDF)</a>
+      <a class="btn" href="index.html">All Documents</a>
+    </div>
+    <div class="doc-filenote">PDF &middot; 96 pages &middot; 3.4 MB</div>
+
+      <div class="spec-strip">
+        <div class="spec-tile">
+          <div class="sl">UBC &middot; very fine mesh</div>
+          <div class="sv num">183<span class="unit">t</span></div>
+          <div class="sd">Davisson (1972) offset method</div>
+        </div>
+        <div class="spec-tile">
+          <div class="sl">Field benchmark</div>
+          <div class="sv num">186<span class="unit">t</span></div>
+          <div class="sd">static load test, Test Pile TP&#8209;4</div>
+        </div>
+        <div class="spec-tile">
+          <div class="sl">Deviation from field</div>
+          <div class="sv num">1.6<span class="unit">%</span></div>
+          <div class="sd">closest of five meshes tested</div>
+        </div>
+        <div class="spec-tile">
+          <div class="sl">Mesh densities run</div>
+          <div class="sv num">5</div>
+          <div class="sd">very coarse &rarr; very fine, full 8&#8209;step loading</div>
+        </div>
+      </div>
+
+      <div class="exhibit hero-exhibit">
+        <div class="exhibit-frame"><img src="img/thesis-hero.jpg" alt="Fig. PLAXIS 3D model geometry &mdash; five stratified soil layers with the 558.8&nbsp;mm diameter, 13&nbsp;m long cast&#8209;in&#8209;situ pile (Test Pile TP&#8209;4) embedded per borehole&nbsp;BH&#8209;2." loading="lazy"></div>
+        <div class="exhibit-cap"><b>Fig.</b> PLAXIS 3D model geometry &mdash; five stratified soil layers with the 558.8&nbsp;mm diameter, 13&nbsp;m long cast&#8209;in&#8209;situ pile (Test Pile TP&#8209;4) embedded per borehole&nbsp;BH&#8209;2.</div>
+      </div>
+
+    <div class="doc-prose">
+      <section class="doc-section">
+        <h2>Abstract</h2>
+        <p>Accurately estimating the ultimate bearing capacity (UBC) of a pile is one of the central problems in deep foundation design. Engineers have traditionally relied on two approaches: analytical or empirical correlations, and field static load tests (SLTs). Analytical and empirical methods are fast and inexpensive but lean on simplifying assumptions about soil behavior that often make them unreliable in practice. Static load tests are the most trustworthy method — a pile is loaded incrementally in the field while its settlement is measured — but they are slow, expensive, and logistically demanding.</p>
+        <p>This thesis explores a third option: using PLAXIS 3D, a finite-element program built specifically for geotechnical analysis, to numerically reproduce a full-scale static load test and estimate UBC directly from the simulated load-settlement (Q-z) response. The study is grounded in real data — an actual static load test and geotechnical investigation carried out for the proposed Co-operative Bhaban building in Shahbagh, Dhaka, Bangladesh. The simulation modeled Test Pile TP-4, a cast-in-situ reinforced concrete pile 558.8 mm (22 in) in diameter and 13 m (43 ft) long, embedded in the stratified soil profile recorded at the nearest borehole, BH-2.</p>
+        <p>Five mesh densities were run and compared against the field Q-z curve. The very fine mesh produced the closest match, and applying the Davisson (1972) offset method to that curve gave an estimated UBC of 183 tonnes — within 1.6% of the 186-tonne benchmark measured in the field. By contrast, classical analytical (O'Neill & Reese) and empirical (Meyerhof, SPT-based) methods overestimated capacity by roughly 188%, essentially confirming that they are unsafe to use as standalone predictors on this soil profile without field calibration. The conclusion: PLAXIS 3D, given accurate input parameters and a sufficiently fine mesh, can reproduce field SLT results closely enough to serve as a reliable, far cheaper substitute or complement to physical load testing.</p>
+      </section>
+      <section class="doc-section">
+        <h2>Why this problem matters</h2>
+        <p>Pile foundations carry loads from buildings, bridges, and other structures down into deeper, more competent soil. Getting their ultimate bearing capacity wrong in either direction is costly: overestimate it and the foundation is unsafe; underestimate it and the design is needlessly expensive. Static load tests remain the gold standard for measuring UBC directly, but their cost and time demands mean they usually aren't feasible for every pile on a project — engineers need a way to extend a handful of field-verified results to the rest of a site with confidence. That gap is what motivates this study: could a finite-element model, once benchmarked against one real static load test, be trusted to stand in for the next one?</p>
+      </section>
+      <section class="doc-section">
+        <h2>Site and data</h2>
+        <p>The load test and geotechnical investigation behind this study were carried out at the proposed Samabaya Bhaban (Co-operative Bhaban) site, Plot No. F/10 A & B, Sher-e-Bangla Nagar, Shahbagh, Dhaka. Ten boreholes, Standard Penetration Tests (SPT), and laboratory testing of soil samples characterized the site; three piles were load-tested (TP-1, TP-2, TP-4), and this thesis focuses on TP-4, using soil parameters from BH-2, the closest borehole to that pile. The field loading protocol applied the load in eight increments, holding each stage until the settlement rate dropped below 0.25 mm/hr or two hours elapsed, whichever came first — the same protocol the PLAXIS 3D model was built to replicate.</p>
+      </section>
+      <section class="doc-section">
+        <h2>Modeling approach</h2>
+        <p>The PLAXIS 3D model represented the soil as five Mohr-Coulomb elastic-perfectly-plastic layers (clay, clay, silt, medium-dense sand, dense sand), with modulus, cohesion, friction angle, and Poisson's ratio for each layer derived from SPT data and standard geotechnical correlations (Bowles, 1997). Pile-soil interfaces were modeled using PLAXIS's Rinter reduction-factor approach, and the pile itself was modeled as linear elastic concrete.</p>
+        <p>Rather than committing to a single mesh resolution, five separate meshes — very coarse, coarse, medium, fine, and very fine — were each run through the full eight-step loading sequence, so that mesh choice could be evaluated on both accuracy and computational cost rather than accuracy alone. The very fine mesh took roughly 28 minutes to solve versus under 5 minutes for the coarser options, so the comparison had real practical stakes: is the extra accuracy worth the extra runtime?</p>
+        <p>The ultimate bearing capacity from each mesh's Q-z curve was then read off using the Davisson (1972) offset method — drawing the pile's theoretical elastic-compression line, offsetting it by 0.15 + 0.1×D (in inches, where D is the pile diameter), and taking the load at which the measured settlement curve crosses that offset line as the UBC. The same Davisson procedure was applied to the field SLT data to produce the 186-tonne benchmark this study compares against, and separately to conservative PLAXIS runs using reduced-modulus soil parameters, to check how sensitive the UBC estimate is to input uncertainty. For a broader frame of reference, UBC was also estimated using two classical methods that don't require finite-element modeling at all: the O'Neill & Reese analytical method and the Meyerhof SPT-based empirical correlation.</p>
+      <div class="exhibit">
+        <div class="exhibit-frame"><img src="img/thesis-flow.jpg" alt="Fig. Modeling workflow &mdash; soil and pile parameters feed a PLAXIS 3D model run at five mesh densities (very coarse to very fine); each run's Q&ndash;z curve is compared against the field static load test to pick the best fit." loading="lazy"></div>
+        <div class="exhibit-cap"><b>Fig.</b> Modeling workflow &mdash; soil and pile parameters feed a PLAXIS 3D model run at five mesh densities (very coarse to very fine); each run's Q&ndash;z curve is compared against the field static load test to pick the best fit.</div>
+      </div>
+      </section>
+      <section class="doc-section">
+        <h2>Results</h2>
+        <p>The mesh comparison showed a clear, if unsurprising, accuracy/cost trade-off. All five meshes produced Q-z curves with the correct overall shape, but the coarser meshes diverged more from the field curve at higher loads. The very fine mesh's Q-z curve tracked the field data most closely across the full loading range and was adopted as the basis for the UBC estimate; the medium and coarse meshes, however, were close enough to the field curve to be reasonable choices for less critical applications, at roughly a sixth of the very fine mesh's computation time — a genuinely useful practical finding for anyone trying to decide how much mesh refinement a project actually needs.</p>
+        <p>Applying the Davisson method to the very fine mesh Q-z curve gave a UBC of 183 tonnes. Against the field-measured 186 tonnes, that's a deviation of about 1.6% — close enough to call the simulation an accurate reproduction of the real pile's behavior, not just a qualitatively similar one. The conservative PLAXIS run, using a deliberately reduced soil modulus, produced a lower, more cautious UBC estimate, as intended — useful for design situations where erring safe matters more than matching the benchmark exactly.</p>
+        <p>The contrast with the classical methods was stark: O'Neill & Reese and Meyerhof both landed around 536–537 tonnes, roughly 188% higher than the field benchmark. That's not a minor discrepancy — using either method directly on this soil profile without field verification would have led to a badly unsafe foundation design. It's a concrete illustration of why analytical and empirical correlations, however convenient, need to be checked against real data before they're trusted on a given site.</p>
+      <div class="exhibit">
+        <div class="exhibit-frame"><img src="img/thesis-mesh.jpg" alt="Fig. The very fine mesh &mdash; the densest of the five discretizations tested, and the one whose Q&ndash;z curve tracked the field data most closely." loading="lazy"></div>
+        <div class="exhibit-cap"><b>Fig.</b> The very fine mesh &mdash; the densest of the five discretizations tested, and the one whose Q&ndash;z curve tracked the field data most closely.</div>
+      </div>
+      </section>
+      <section class="doc-section">
+        <h2>Conclusion</h2>
+        <p>Taken together, the results support the thesis's central claim: PLAXIS 3D, given well-characterized soil parameters and enough mesh resolution, can reproduce a field static load test closely enough (within 1.6% here) to serve as a dependable, considerably cheaper alternative to repeated physical load testing — while the mesh-density comparison gives practicing engineers a real basis for choosing "good enough" mesh resolution rather than defaulting to the most expensive option. It also reinforces a more cautionary lesson: purely analytical or empirical UBC methods can be off by a factor of two or more on a given site, and should not be relied on without some form of field or numerical calibration. This work was later extended in a follow-up study that rebuilt the same pile-soil system in ANSYS Mechanical, a general-purpose structural FEM tool, to see how a non-specialist platform compares to PLAXIS 3D's purpose-built geotechnical solver — that companion project is presented separately.</p>
+      </section>
+    </div>
+
+    <div class="companion">
+      <p><b>Companion study.</b> The same pile&#8209;soil system was later rebuilt in ANSYS Mechanical, a general&#8209;purpose structural FEM tool, to see how it compares to PLAXIS 3D's purpose&#8209;built geotechnical solver.</p>
+      <a class="btn" href="ansys-pile.html">Read the ANSYS study &rarr;</a>
+    </div>
+
+    <div class="pagenav">
+      <a class="prev" href="index.html"><span class="lbl">&larr; Previous</span>Documents Index</a>
+      <a class="next" href="cfd-scour.html"><span class="lbl">Next &rarr;</span>CFD Scour Simulation of a Bridge Pier</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p class="mono">Drawing set maintained by Md. Ashrafuzzaman &middot; last revised 2026 &middot; <a href="../index.html" style="color:inherit;">back to portfolio</a></p>
+</footer>
+</body>
+</html>
